@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Figtree } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "./ClientLayout";
 
-const inter = Inter({
+const figtree = Figtree({
   subsets: ["latin", "latin-ext"],
-  variable: "--font-inter",
+  variable: "--font-figtree",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Trang Pham Cz Cosmetic - My pham chinh hang tai Sec",
-  description: "Cua hang my pham chinh hang danh cho nguoi Viet va nguoi Sec tai Czech Republic. Skincare, Makeup, Body Care. 100% authentic cosmetics.",
-  keywords: "my pham, cosmetics, kosmetika, skincare, makeup, Czech Republic, Sec, Vietnamese cosmetics",
+  title: "Trang Pham Cosmetics | My pham chinh hang Han Quoc tai Sec",
+  description: "Cua hang my pham Han Quoc chinh hang tai Sec. K-beauty skincare, makeup. Originalni korejska kosmetika v Cesku.",
 };
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${figtree.variable} font-[family-name:var(--font-figtree)] antialiased`}>
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

@@ -1,10 +1,5 @@
-export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
-}
-
-export function formatCZK(price: number): string {
-  const czk = Math.round(price / 5.5);
-  return new Intl.NumberFormat('cs-CZ').format(czk) + ' Kc';
+export function formatPrice(priceInCZK: number): string {
+  return new Intl.NumberFormat('cs-CZ').format(priceInCZK) + ' Kc';
 }
 
 export function getDiscountPercent(price: number, originalPrice: number): number {

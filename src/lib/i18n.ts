@@ -1,231 +1,75 @@
 import { Locale } from '@/types';
 
 export const translations: Record<string, Record<Locale, string>> = {
-  // Header
-  'search.placeholder': {
-    vi: 'Tim kiem san pham...',
-    cs: 'Hledat produkty...',
-    en: 'Search products...',
+  'announcement': {
+    vi: 'MIEN PHI VAN CHUYEN cho don hang tu 1.500 CZK',
+    cs: 'DOPRAVA ZDARMA pri nakupu nad 1.500 Kc',
+    en: 'FREE SHIPPING on orders over 1,500 CZK',
   },
-  'cart.title': {
-    vi: 'Gio hang',
-    cs: 'Kosik',
-    en: 'Cart',
+  'search.placeholder': { vi: 'Tim kiem...', cs: 'Hledat...', en: 'Search...' },
+  'cart.title': { vi: 'Gio hang', cs: 'Kosik', en: 'Cart' },
+  'cart.empty': { vi: 'Gio hang trong', cs: 'Kosik je prazdny', en: 'Your cart is empty' },
+  'cart.checkout': { vi: 'Thanh toan', cs: 'K pokladne', en: 'Checkout' },
+  'account.login': { vi: 'Tai khoan', cs: 'Ucet', en: 'Account' },
+  'nav.products': { vi: 'San pham', cs: 'Produkty', en: 'Products' },
+  'nav.makeup': { vi: 'Trang diem', cs: 'Make-up', en: 'Makeup' },
+  'nav.skincare': { vi: 'Cham soc da', cs: 'Skincare', en: 'Skincare' },
+  'nav.bodycare': { vi: 'Cham soc co the', cs: 'Pece o telo', en: 'Body Care' },
+  'nav.haircare': { vi: 'Cham soc toc', cs: 'Pece o vlasy', en: 'Hair Care' },
+  'nav.bestsellers': { vi: 'Ban chay', cs: 'Bestsellery', en: 'Best Sellers' },
+  'nav.brands': { vi: 'Thuong hieu', cs: 'Znacky', en: 'Brands' },
+  'nav.new': { vi: 'Hang moi', cs: 'Novinky', en: 'New Arrivals' },
+  'nav.sale': { vi: 'Khuyen mai', cs: 'Akce', en: 'Sale' },
+  'nav.makeup.face': { vi: 'Trang diem mat', cs: 'Tvar', en: 'Face' },
+  'nav.makeup.eyes': { vi: 'Mat', cs: 'Oci', en: 'Eyes' },
+  'nav.makeup.lips': { vi: 'Moi', cs: 'Rty', en: 'Lips' },
+  'nav.makeup.brows': { vi: 'Long may', cs: 'Oboci', en: 'Brows' },
+  'nav.makeup.tools': { vi: 'Dung cu', cs: 'Doplnky', en: 'Tools' },
+  'nav.skincare.cleanser': { vi: 'Tay trang & Rua mat', cs: 'Cisteni', en: 'Cleansers' },
+  'nav.skincare.toner': { vi: 'Toner', cs: 'Tonery', en: 'Toners' },
+  'nav.skincare.serum': { vi: 'Serum', cs: 'Sera', en: 'Serums' },
+  'nav.skincare.moisturizer': { vi: 'Kem duong', cs: 'Kremy', en: 'Moisturizers' },
+  'nav.skincare.sunscreen': { vi: 'Chong nang', cs: 'SPF ochrana', en: 'Sunscreen' },
+  'nav.skincare.mask': { vi: 'Mat na', cs: 'Masky', en: 'Masks' },
+  'home.newArrivals': { vi: 'HANG MOI VE', cs: 'NOVINKY', en: 'NEW ARRIVALS' },
+  'home.bestSellers': { vi: 'BAN CHAY NHAT', cs: 'BESTSELLERY', en: 'BEST SELLERS' },
+  'home.ourBrands': { vi: 'THUONG HIEU CUA CHUNG TOI', cs: 'NASE ZNACKY', en: 'OUR BRANDS' },
+  'home.shopNow': { vi: 'Mua ngay', cs: 'Nakoupit', en: 'Shop Now' },
+  'home.viewAll': { vi: 'Xem tat ca', cs: 'Zobrazit vse', en: 'View All' },
+  'home.hero.title': { vi: 'My pham chinh hang', cs: 'Originalni kosmetika', en: 'Authentic Beauty' },
+  'home.hero.subtitle': {
+    vi: 'Cham soc da & Trang diem tu cac thuong hieu hang dau Han Quoc',
+    cs: 'Pece o plet & make-up od prednich korejskych znacek',
+    en: 'Skincare & Makeup from leading Korean brands',
   },
-  'cart.empty': {
-    vi: 'Gio hang trong',
-    cs: 'Kosik je prazdny',
-    en: 'Cart is empty',
-  },
-  'cart.total': {
-    vi: 'Tong cong',
-    cs: 'Celkem',
-    en: 'Total',
-  },
-  'account.login': {
-    vi: 'Dang nhap',
-    cs: 'Prihlasit se',
-    en: 'Login',
-  },
-  'account.register': {
-    vi: 'Dang ky',
-    cs: 'Registrace',
-    en: 'Register',
-  },
-  // Navigation
-  'nav.home': {
-    vi: 'Trang chu',
-    cs: 'Domov',
-    en: 'Home',
-  },
-  'nav.deals': {
-    vi: 'Deal sieu re',
-    cs: 'Super slevy',
-    en: 'Super Deals',
-  },
-  'nav.combo': {
-    vi: 'Combo',
-    cs: 'Combo',
-    en: 'Combo',
-  },
-  'nav.makeup': {
-    vi: 'Trang diem',
-    cs: 'Make-up',
-    en: 'Makeup',
-  },
-  'nav.skincare': {
-    vi: 'Cham soc da',
-    cs: 'Pece o plet',
-    en: 'Skincare',
-  },
-  'nav.bodycare': {
-    vi: 'Cham soc co the',
-    cs: 'Pece o telo',
-    en: 'Body Care',
-  },
-  'nav.haircare': {
-    vi: 'Cham soc toc',
-    cs: 'Pece o vlasy',
-    en: 'Hair Care',
-  },
-  'nav.supplements': {
-    vi: 'Thuc pham chuc nang',
-    cs: 'Doplnky stravy',
-    en: 'Supplements',
-  },
-  'nav.tools': {
-    vi: 'Dung cu lam dep',
-    cs: 'Kosmeticke nastroje',
-    en: 'Beauty Tools',
-  },
-  'nav.brands': {
-    vi: 'Thuong hieu',
-    cs: 'Znacky',
-    en: 'Brands',
-  },
-  'nav.blog': {
-    vi: 'Blog',
-    cs: 'Blog',
-    en: 'Blog',
-  },
-  // Homepage
-  'home.dailyDeals': {
-    vi: 'Gia tot moi ngay',
-    cs: 'Denni nabidky',
-    en: 'Daily Deals',
-  },
-  'home.bestSellers': {
-    vi: 'Ban chay nhat',
-    cs: 'Nejprodavanejsi',
-    en: 'Best Sellers',
-  },
-  'home.newArrivals': {
-    vi: 'San pham moi',
-    cs: 'Novinky',
-    en: 'New Arrivals',
-  },
-  'home.monthlyPromo': {
-    vi: 'Khuyen mai trong thang',
-    cs: 'Mesicni akce',
-    en: 'Monthly Promotions',
-  },
-  'home.freeShipping': {
-    vi: 'Mien phi van chuyen tu 499K',
-    cs: 'Doprava zdarma od 499 CZK',
-    en: 'Free shipping from 499K',
-  },
-  'home.authentic': {
-    vi: '100% chinh hang',
-    cs: '100% originalni',
-    en: '100% Authentic',
-  },
-  'home.support': {
-    vi: 'Ho tro 24/7',
-    cs: 'Podpora 24/7',
-    en: '24/7 Support',
-  },
-  'home.returns': {
-    vi: 'Doi tra de dang',
-    cs: 'Snadne vraceni',
-    en: 'Easy Returns',
-  },
-  // Product
-  'product.addToCart': {
-    vi: 'Them vao gio hang',
-    cs: 'Pridat do kosiku',
-    en: 'Add to Cart',
-  },
-  'product.sold': {
-    vi: 'Da ban',
-    cs: 'Prodano',
-    en: 'Sold',
-  },
-  'product.outOfStock': {
-    vi: 'Het hang',
-    cs: 'Vyprodano',
-    en: 'Out of Stock',
-  },
-  // Footer
-  'footer.about': {
-    vi: 'Ve chung toi',
-    cs: 'O nas',
-    en: 'About Us',
-  },
-  'footer.policy': {
-    vi: 'Chinh sach',
-    cs: 'Zasady',
-    en: 'Policies',
-  },
-  'footer.shipping': {
-    vi: 'Chinh sach van chuyen',
-    cs: 'Zasady doruceni',
-    en: 'Shipping Policy',
-  },
-  'footer.returnPolicy': {
-    vi: 'Chinh sach doi tra',
-    cs: 'Zasady vraceni',
-    en: 'Return Policy',
-  },
-  'footer.payment': {
-    vi: 'Phuong thuc thanh toan',
-    cs: 'Zpusoby platby',
-    en: 'Payment Methods',
-  },
-  'footer.contact': {
-    vi: 'Lien he',
-    cs: 'Kontakt',
-    en: 'Contact',
-  },
-  'footer.followUs': {
-    vi: 'Theo doi chung toi',
-    cs: 'Sledujte nas',
-    en: 'Follow Us',
-  },
-  'footer.rights': {
-    vi: 'Tat ca quyen duoc bao luu.',
-    cs: 'Vsechna prava vyhrazena.',
-    en: 'All rights reserved.',
-  },
-  // Category
-  'category.all': {
-    vi: 'Tat ca san pham',
-    cs: 'Vsechny produkty',
-    en: 'All Products',
-  },
-  'category.filter': {
-    vi: 'Bo loc',
-    cs: 'Filtr',
-    en: 'Filter',
-  },
-  'category.sort': {
-    vi: 'Sap xep',
-    cs: 'Razeni',
-    en: 'Sort by',
-  },
-  'category.priceRange': {
-    vi: 'Khoang gia',
-    cs: 'Cenove rozpeti',
-    en: 'Price Range',
-  },
-  'viewAll': {
-    vi: 'Xem tat ca',
-    cs: 'Zobrazit vse',
-    en: 'View All',
-  },
+  'product.addToCart': { vi: 'Them vao gio', cs: 'Pridat do kosiku', en: 'Add to Cart' },
+  'product.selectOption': { vi: 'Chon mau', cs: 'Vyberte moznost', en: 'Select Option' },
+  'product.new': { vi: 'Moi', cs: 'Novinka', en: 'New' },
+  'product.sale': { vi: 'Sale', cs: 'Akce', en: 'Sale' },
+  'product.regularPrice': { vi: 'Gia goc', cs: 'Bezna cena', en: 'Regular price' },
+  'product.salePrice': { vi: 'Gia sale', cs: 'Akce', en: 'Sale price' },
+  'footer.about': { vi: 'Ve chung toi', cs: 'O nas', en: 'About Us' },
+  'footer.help': { vi: 'Ho tro', cs: 'Napoveda', en: 'Help' },
+  'footer.shipping': { vi: 'Van chuyen', cs: 'Doruceni', en: 'Shipping' },
+  'footer.returns': { vi: 'Doi tra', cs: 'Vraceni', en: 'Returns' },
+  'footer.contact': { vi: 'Lien he', cs: 'Kontakt', en: 'Contact' },
+  'footer.privacy': { vi: 'Bao mat', cs: 'Ochrana soukromi', en: 'Privacy' },
+  'footer.terms': { vi: 'Dieu khoan', cs: 'Podminky', en: 'Terms' },
+  'footer.followUs': { vi: 'Theo doi', cs: 'Sledujte nas', en: 'Follow Us' },
+  'footer.newsletter': { vi: 'Nhan tin moi', cs: 'Odber novinek', en: 'Newsletter' },
+  'footer.subscribe': { vi: 'Dang ky', cs: 'Odebrat', en: 'Subscribe' },
+  'footer.rights': { vi: 'Moi quyen duoc bao luu.', cs: 'Vsechna prava vyhrazena.', en: 'All rights reserved.' },
+  'category.sort': { vi: 'Sap xep', cs: 'Razeni', en: 'Sort' },
+  'category.popular': { vi: 'Pho bien', cs: 'Popularni', en: 'Popular' },
+  'category.newest': { vi: 'Moi nhat', cs: 'Nejnovejsi', en: 'Newest' },
+  'category.priceLow': { vi: 'Gia tang dan', cs: 'Cena vzestupne', en: 'Price: Low-High' },
+  'category.priceHigh': { vi: 'Gia giam dan', cs: 'Cena sestupne', en: 'Price: High-Low' },
+  'category.noProducts': { vi: 'Khong tim thay san pham', cs: 'Zadne produkty', en: 'No products found' },
 };
 
 export function t(key: string, locale: Locale): string {
   return translations[key]?.[locale] || key;
 }
 
-export const localeNames: Record<Locale, string> = {
-  vi: 'Tieng Viet',
-  cs: 'Cestina',
-  en: 'English',
-};
-
-export const localeFlags: Record<Locale, string> = {
-  vi: '🇻🇳',
-  cs: '🇨🇿',
-  en: '🇬🇧',
-};
+export const localeNames: Record<Locale, string> = { vi: 'Tieng Viet', cs: 'Cestina', en: 'English' };
+export const localeFlags: Record<Locale, string> = { vi: '🇻🇳', cs: '🇨🇿', en: '🇬🇧' };
