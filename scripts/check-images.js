@@ -1,0 +1,10 @@
+const p = require('../src/data/products.json');
+const noImg = p.filter(x => !x.images || x.images.length === 0);
+console.log('Total:', p.length, 'No image:', noImg.length);
+const brands = [...new Set(noImg.map(x => x.brand).filter(Boolean))];
+console.log('Brands without images:', brands.slice(0, 30).join(', '));
+const cats = [...new Set(noImg.map(x => x.category))];
+console.log('Categories:', cats.join(', '));
+const withImg = p.filter(x => x.images && x.images.length > 0);
+console.log('With images:', withImg.length);
+withImg.forEach(x => console.log(' ', x.slug, x.images[0]));
