@@ -33,23 +33,23 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Quick links */}
+          {/* Categories */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-charcoal mb-4">{t('footer.help', locale)}</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-charcoal mb-4">{t('nav.products', locale)}</h4>
             <ul className="space-y-2.5 text-sm text-text-secondary">
-              <li><Link href="/shipping" className="hover:text-sage-darker transition-colors">{t('footer.shipping', locale)}</Link></li>
-              <li><Link href="/returns" className="hover:text-sage-darker transition-colors">{t('footer.returns', locale)}</Link></li>
-              <li><Link href="/contact" className="hover:text-sage-darker transition-colors">{t('footer.contact', locale)}</Link></li>
+              <li><Link href="/category/skincare" className="hover:text-sage-darker transition-colors">{locale === 'vi' ? 'Chăm sóc da' : locale === 'cs' ? 'Péče o pleť' : 'Skincare'}</Link></li>
+              <li><Link href="/category/makeup" className="hover:text-sage-darker transition-colors">{locale === 'vi' ? 'Trang điểm' : locale === 'cs' ? 'Makeup' : 'Makeup'}</Link></li>
+              <li><Link href="/category/haircare" className="hover:text-sage-darker transition-colors">{locale === 'vi' ? 'Chăm sóc tóc' : locale === 'cs' ? 'Péče o vlasy' : 'Hair Care'}</Link></li>
+              <li><Link href="/category/instock" className="hover:text-sage-darker transition-colors">{locale === 'vi' ? 'Còn hàng' : locale === 'cs' ? 'Skladem' : 'In Stock'}</Link></li>
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Contact */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-charcoal mb-4">{t('footer.about', locale)}</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-charcoal mb-4">{t('footer.help', locale)}</h4>
             <ul className="space-y-2.5 text-sm text-text-secondary">
-              <li><Link href="/about" className="hover:text-sage-darker transition-colors">{t('footer.about', locale)}</Link></li>
-              <li><Link href="/privacy" className="hover:text-sage-darker transition-colors">{t('footer.privacy', locale)}</Link></li>
-              <li><Link href="/terms" className="hover:text-sage-darker transition-colors">{t('footer.terms', locale)}</Link></li>
+              <li><a href={`tel:${storeInfo.phone[0]}`} className="hover:text-sage-darker transition-colors">{t('footer.contact', locale)}: {storeInfo.phone[0]}</a></li>
+              <li><a href={`mailto:${storeInfo.email}`} className="hover:text-sage-darker transition-colors">{storeInfo.email}</a></li>
             </ul>
           </div>
 

@@ -53,11 +53,8 @@ export default function Header() {
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
             {[
-              { key: 'nav.products', slug: '/products', id: 'products', hasMega: true },
-              { key: 'nav.bestsellers', slug: '/category/bestsellers' },
-              { key: 'nav.brands', slug: '/brands' },
-              { key: 'nav.new', slug: '/category/new' },
-              { key: 'nav.sale', slug: '/category/sale' },
+              { key: 'nav.products', slug: '#', id: 'products', hasMega: true },
+              { key: 'nav.bestsellers', slug: '/category/instock' },
             ].map((item) => (
               <div
                 key={item.key}
@@ -183,14 +180,8 @@ export default function Header() {
                 </div>
               ))}
               <div className="border-t border-border mt-2 pt-2">
-                <Link href="/category/bestsellers" className="block px-5 py-3 text-sm font-semibold uppercase tracking-wide hover:bg-sage-lightest" onClick={() => setMobileOpen(false)}>
+                <Link href="/category/instock" className="block px-5 py-3 text-sm font-semibold uppercase tracking-wide hover:bg-sage-lightest" onClick={() => setMobileOpen(false)}>
                   {t('nav.bestsellers', locale)}
-                </Link>
-                <Link href="/category/new" className="block px-5 py-3 text-sm font-semibold uppercase tracking-wide hover:bg-sage-lightest" onClick={() => setMobileOpen(false)}>
-                  {t('nav.new', locale)}
-                </Link>
-                <Link href="/category/sale" className="block px-5 py-3 text-sm font-semibold text-sale uppercase tracking-wide hover:bg-sage-lightest" onClick={() => setMobileOpen(false)}>
-                  {t('nav.sale', locale)}
                 </Link>
               </div>
             </div>
