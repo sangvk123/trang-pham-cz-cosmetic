@@ -124,11 +124,11 @@ export default function Header() {
               )}
             </div>
 
-            <Link href="#" className="hidden sm:block p-2 hover:bg-sage-lightest rounded-full transition-colors">
+            <Link href="/account" className="hidden sm:block p-2 hover:bg-sage-lightest rounded-full transition-colors">
               <FiUser size={18} />
             </Link>
 
-            <Link href="#" className="relative p-2 hover:bg-sage-lightest rounded-full transition-colors">
+            <Link href="/cart" className="relative p-2 hover:bg-sage-lightest rounded-full transition-colors">
               <FiShoppingBag size={18} />
               {totalItems > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-sage-darker text-white text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center leading-none">
