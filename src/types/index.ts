@@ -3,20 +3,16 @@ export type Locale = 'vi' | 'cs' | 'en';
 export interface Product {
   id: string;
   slug: string;
-  name: Record<Locale, string>;
-  description: Record<Locale, string>;
+  name: string;
+  description: string;
   price: number;
-  originalPrice?: number;
   images: string[];
   category: string;
-  subcategory?: string;
+  subcategory?: string | null;
   brand: string;
-  rating: number;
-  reviewCount: number;
+  stock: number;
   inStock: boolean;
-  isNew?: boolean;
-  isBestSeller?: boolean;
-  isOnSale?: boolean;
+  group: string;
 }
 
 export interface Category {

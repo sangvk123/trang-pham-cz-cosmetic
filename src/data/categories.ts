@@ -32,4 +32,8 @@ export const categories: Category[] = [
     id: 'haircare', slug: 'hair-care',
     name: { vi: 'Chăm sóc tóc', cs: 'Péče o vlasy', en: 'Hair Care' },
   },
+  {
+    id: 'other', slug: 'other',
+    name: { vi: 'Khác', cs: 'Ostatní', en: 'Other' },
+  },
 ];

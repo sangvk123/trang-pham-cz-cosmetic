@@ -4,13 +4,13 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiShoppingCart, FiStar, FiMinus, FiPlus, FiHeart } from 'react-icons/fi';
+import { FiShoppingCart, FiMinus, FiPlus, FiHeart } from 'react-icons/fi';
 import { useLocale } from '@/lib/LocaleContext';
 import { useCart } from '@/lib/CartContext';
 import { t } from '@/lib/i18n';
 import { products } from '@/data/products';
 import { categories } from '@/data/categories';
-import { formatPrice, getDiscountPercent } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils';
 import ProductCard from '@/components/ProductCard';
 
 export default function ProductDetailPage() {
@@ -33,11 +33,8 @@ export default function ProductDetailPage() {
     );
   }
 
-  const discount = product.originalPrice
-    ? getDiscountPercent(product.price, product.originalPrice)
-    : 0;
-
   const category = categories.find((c) => c.id === product.category);
+  const hasImage = product.images.length > 0;
 
   const relatedProducts = products
     .filter((p) => p.category === product.category && p.id !== product.id)
@@ -61,17 +58,17 @@ export default function ProductDetailPage() {
             <span className="mx-2">/</span>
           </>
         )}
-        <span className="text-charcoal font-medium">{product.name[locale]}</span>
+        <span className="text-charcoal font-medium">{product.name}</span>
       </nav>
 
       {/* Product detail */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {/* Image */}
         <div className="aspect-square bg-sage-lightest rounded-lg overflow-hidden relative">
-          {product.images.length > 0 && product.images[0] !== '' ? (
+          {hasImage ? (
             <Image
               src={product.images[0]}
-              alt={product.name[locale]}
+              alt={product.name}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -81,9 +78,9 @@ export default function ProductDetailPage() {
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center text-text-muted">
                 <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-sage-light flex items-center justify-center">
-                  <span className="text-2xl font-bold text-sage-darker">{product.brand.charAt(0)}</span>
+                  <span className="text-2xl font-bold text-sage-darker">{(product.brand || product.name).charAt(0)}</span>
                 </div>
-                <p className="text-sm font-medium">{product.brand}</p>
+                <p className="text-sm font-medium">{product.brand || product.group}</p>
               </div>
             </div>
           )}
@@ -91,48 +88,37 @@ export default function ProductDetailPage() {
 
         {/* Info */}
         <div>
-          <p className="text-xs text-sage-darker uppercase tracking-wider mb-1 font-medium">{product.brand}</p>
-          <h1 className="text-xl md:text-2xl font-bold text-charcoal mb-3">{product.name[locale]}</h1>
+          {product.brand && (
+            <p className="text-xs text-sage-darker uppercase tracking-wider mb-1 font-medium">{product.brand}</p>
+          )}
+          <h1 className="text-xl md:text-2xl font-bold text-charcoal mb-3">{product.name}</h1>
 
-          {/* Rating */}
-          <div className="flex items-center gap-2 mb-4">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <FiStar
-                  key={i}
-                  size={14}
-                  className={i < Math.floor(product.rating) ? 'fill-star text-star' : 'text-gray-300'}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-text-secondary">
-              {product.rating} ({product.reviewCount} {locale === 'vi' ? 'đánh giá' : locale === 'cs' ? 'hodnocení' : 'reviews'})
-            </span>
-          </div>
+          {/* Group tag */}
+          <p className="text-xs text-text-muted mb-4">{product.group}</p>
 
           {/* Price */}
           <div className="bg-sage-lightest rounded-lg p-4 mb-5">
-            <div className="flex items-baseline gap-3">
-              <span className={`text-2xl font-bold ${product.isOnSale ? 'text-sale' : 'text-charcoal'}`}>
-                {formatPrice(product.price)}
-              </span>
-              {product.originalPrice && (
-                <>
-                  <span className="text-base text-text-muted line-through">
-                    {formatPrice(product.originalPrice)}
-                  </span>
-                  <span className="bg-sale text-white text-xs font-bold px-2 py-0.5 rounded">
-                    -{discount}%
-                  </span>
-                </>
-              )}
-            </div>
+            <span className="text-2xl font-bold text-charcoal">
+              {formatPrice(product.price)}
+            </span>
           </div>
 
           {/* Description */}
-          <p className="text-sm text-text-secondary mb-6 leading-relaxed">
-            {product.description[locale]}
-          </p>
+          {product.description && (
+            <p className="text-sm text-text-secondary mb-6 leading-relaxed">
+              {product.description}
+            </p>
+          )}
+
+          {/* Stock status */}
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium mb-6 ${
+            product.inStock ? 'bg-badge-new text-sage-darker' : 'bg-sale-bg text-sale'
+          }`}>
+            <span className={`w-2 h-2 rounded-full ${product.inStock ? 'bg-sage-darker' : 'bg-sale'}`} />
+            {product.inStock
+              ? (locale === 'vi' ? 'Còn hàng' : locale === 'cs' ? 'Skladem' : 'In Stock')
+              : (locale === 'vi' ? 'Liên hệ' : locale === 'cs' ? 'Kontaktujte nás' : 'Contact Us')}
+          </div>
 
           {/* Quantity */}
           <div className="flex items-center gap-4 mb-6">
@@ -165,19 +151,14 @@ export default function ProductDetailPage() {
               className="flex-1 bg-charcoal text-white py-3 rounded-full font-medium text-sm hover:bg-charcoal-light transition-colors flex items-center justify-center gap-2"
             >
               <FiShoppingCart size={16} />
-              {t('product.addToCart', locale)}
+              {product.inStock
+                ? t('product.addToCart', locale)
+                : (locale === 'vi' ? 'Liên hệ đặt hàng' : locale === 'cs' ? 'Kontaktujte nás' : 'Contact to Order')}
             </button>
             <button className="w-12 h-12 border border-border rounded-full flex items-center justify-center hover:bg-sage-lightest transition-colors">
               <FiHeart size={18} />
             </button>
           </div>
-
-          {/* Stock status */}
-          <p className={`text-xs mt-4 ${product.inStock ? 'text-sage-darker' : 'text-sale'}`}>
-            {product.inStock
-              ? (locale === 'vi' ? 'Còn hàng' : locale === 'cs' ? 'Skladem' : 'In Stock')
-              : (locale === 'vi' ? 'Hết hàng' : locale === 'cs' ? 'Nedostupné' : 'Out of Stock')}
-          </p>
         </div>
       </div>
 

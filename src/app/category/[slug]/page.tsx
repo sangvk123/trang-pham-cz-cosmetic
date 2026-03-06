@@ -19,23 +19,21 @@ export default function CategoryPage() {
   const sub = category?.subcategories?.find((s) => s.slug === slug);
   const displayName = sub?.name[locale] || category?.name[locale] || slug;
 
-  let filtered = category
+  const filtered = category
     ? products.filter((p) => p.category === category.id || (sub && p.subcategory === sub.id))
-    : slug === 'bestsellers' ? products.filter((p) => p.isBestSeller)
-    : slug === 'new' ? products.filter((p) => p.isNew)
-    : slug === 'sale' ? products.filter((p) => p.isOnSale)
+    : slug === 'instock' ? products.filter((p) => p.inStock)
     : products;
 
-  const title = slug === 'bestsellers' ? t('nav.bestsellers', locale)
-    : slug === 'new' ? t('nav.new', locale)
-    : slug === 'sale' ? t('nav.sale', locale)
+  const title = slug === 'instock'
+    ? (locale === 'vi' ? 'Còn hàng' : locale === 'cs' ? 'Skladem' : 'In Stock')
     : displayName;
 
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === 'price-asc') return a.price - b.price;
     if (sortBy === 'price-desc') return b.price - a.price;
-    if (sortBy === 'newest') return 0;
-    return b.rating - a.rating;
+    // Default: in-stock first, then alphabetical
+    if (a.inStock !== b.inStock) return a.inStock ? -1 : 1;
+    return a.name.localeCompare(b.name);
   });
 
   return (
@@ -47,14 +45,18 @@ export default function CategoryPage() {
       </nav>
 
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-charcoal tracking-tight">{title}</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-charcoal tracking-tight">{title}</h1>
+          <p className="text-sm text-text-muted mt-1">
+            {filtered.length} {locale === 'vi' ? 'sản phẩm' : locale === 'cs' ? 'produktů' : 'products'}
+          </p>
+        </div>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
           className="text-sm border border-border rounded-full px-4 py-2 focus:outline-none focus:border-sage-dark bg-white"
         >
           <option value="popular">{t('category.popular', locale)}</option>
-          <option value="newest">{t('category.newest', locale)}</option>
           <option value="price-asc">{t('category.priceLow', locale)}</option>
           <option value="price-desc">{t('category.priceHigh', locale)}</option>
         </select>

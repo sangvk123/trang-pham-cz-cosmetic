@@ -18,14 +18,16 @@ const heroImages = [
 
 export default function HomePage() {
   const { locale } = useLocale();
-  const newProducts = products.filter((p) => p.isNew);
-  const bestSellers = products.filter((p) => p.isBestSeller);
+
+  // Show in-stock products first, then take top items
+  const inStockProducts = products.filter((p) => p.inStock).slice(0, 8);
+  const featuredProducts = products.slice(0, 8);
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [scrollY, setScrollY] = useState(0);
 
   useScrollReveal();
 
-  // Hero slideshow auto-rotate
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % heroImages.length);
   }, []);
@@ -35,7 +37,6 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, [nextSlide]);
 
-  // Parallax scroll effect
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -46,7 +47,6 @@ export default function HomePage() {
     <div>
       {/* Hero with slideshow */}
       <section className="relative overflow-hidden h-[70vh] min-h-[500px] max-h-[700px]">
-        {/* Slideshow images */}
         {heroImages.map((src, i) => (
           <div
             key={src}
@@ -65,10 +65,8 @@ export default function HomePage() {
           </div>
         ))}
 
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/75 to-white/20" />
 
-        {/* Content */}
         <div className="relative h-full max-w-7xl mx-auto px-4 flex items-center">
           <div className="max-w-lg" style={{ transform: `translateY(${scrollY * -0.1}px)` }}>
             <Image
@@ -85,7 +83,7 @@ export default function HomePage() {
               {t('home.hero.subtitle', locale)}
             </p>
             <Link
-              href="/products"
+              href="/category/skincare"
               className="inline-flex items-center gap-2 bg-charcoal text-white px-8 py-3.5 rounded-full font-medium text-sm hover:bg-charcoal-light transition-all hover:gap-3 animate-fadeIn"
               style={{ animationDelay: '0.5s', animationFillMode: 'both' }}
             >
@@ -94,7 +92,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Slide indicators */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
           {heroImages.map((_, i) => (
             <button
@@ -124,22 +121,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* New Arrivals */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-6 scroll-reveal">
-          <h2 className="text-xl md:text-2xl font-bold tracking-tight text-charcoal">{t('home.newArrivals', locale)}</h2>
-          <Link href="/category/new" className="text-sm text-sage-darker font-medium hover:underline flex items-center gap-1">
-            {t('home.viewAll', locale)} <FiArrowRight size={14} />
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 stagger-children">
-          {newProducts.map((p, i) => (
-            <div key={p.id} className="scroll-reveal" style={{ '--stagger-index': i } as React.CSSProperties}>
-              <ProductCard product={p} />
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* In Stock - Featured */}
+      {inStockProducts.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-12">
+          <div className="flex items-center justify-between mb-6 scroll-reveal">
+            <h2 className="text-xl md:text-2xl font-bold tracking-tight text-charcoal">
+              {locale === 'vi' ? 'SẢN PHẨM CÒN HÀNG' : locale === 'cs' ? 'SKLADEM' : 'IN STOCK'}
+            </h2>
+            <Link href="/category/skincare" className="text-sm text-sage-darker font-medium hover:underline flex items-center gap-1">
+              {t('home.viewAll', locale)} <FiArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 stagger-children">
+            {inStockProducts.map((p, i) => (
+              <div key={p.id} className="scroll-reveal" style={{ '--stagger-index': i } as React.CSSProperties}>
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Brand carousel */}
       <section className="bg-cream py-10 scroll-reveal-scale">
@@ -157,16 +158,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Best Sellers */}
+      {/* All Products */}
       <section className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex items-center justify-between mb-6 scroll-reveal">
-          <h2 className="text-xl md:text-2xl font-bold tracking-tight text-charcoal">{t('home.bestSellers', locale)}</h2>
-          <Link href="/category/bestsellers" className="text-sm text-sage-darker font-medium hover:underline flex items-center gap-1">
+          <h2 className="text-xl md:text-2xl font-bold tracking-tight text-charcoal">
+            {locale === 'vi' ? 'TẤT CẢ SẢN PHẨM' : locale === 'cs' ? 'VŠECHNY PRODUKTY' : 'ALL PRODUCTS'}
+          </h2>
+          <Link href="/category/makeup" className="text-sm text-sage-darker font-medium hover:underline flex items-center gap-1">
             {t('home.viewAll', locale)} <FiArrowRight size={14} />
           </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 stagger-children">
-          {bestSellers.map((p, i) => (
+          {featuredProducts.map((p, i) => (
             <div key={p.id} className="scroll-reveal" style={{ '--stagger-index': i } as React.CSSProperties}>
               <ProductCard product={p} />
             </div>
@@ -183,7 +186,7 @@ export default function HomePage() {
           <p className="text-text-secondary mb-6 max-w-md mx-auto">
             {locale === 'vi' ? 'Sản phẩm từ các thương hiệu Hàn Quốc uy tín' : locale === 'cs' ? 'Produkty od ověřených korejských značek' : 'Products from trusted Korean brands'}
           </p>
-          <Link href="/products" className="inline-flex items-center gap-2 bg-sage text-white px-8 py-3 rounded-full font-medium text-sm hover:bg-sage-dark transition-all hover:gap-3">
+          <Link href="/category/skincare" className="inline-flex items-center gap-2 bg-sage text-white px-8 py-3 rounded-full font-medium text-sm hover:bg-sage-dark transition-all hover:gap-3">
             {t('home.shopNow', locale)} <FiArrowRight size={16} />
           </Link>
         </div>
