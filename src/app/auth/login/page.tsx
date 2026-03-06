@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FiEye, FiEyeOff, FiMail, FiLock } from 'react-icons/fi';
 import { useLocale } from '@/lib/LocaleContext';
-import SocialLoginButtons from '@/components/SocialLoginButtons';
 
 const texts = {
   title: { vi: 'Đăng nhập', cs: 'Přihlášení', en: 'Sign In' },
@@ -103,8 +102,6 @@ export default function LoginPage() {
           {loading ? texts.loading[locale] : texts.submit[locale]}
         </button>
       </form>
-
-      <SocialLoginButtons locale={locale} />
 
       <p className="text-center text-sm text-text-muted mt-6">
         {texts.noAccount[locale]}{' '}
