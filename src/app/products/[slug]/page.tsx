@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { FiShoppingCart, FiStar, FiMinus, FiPlus, FiHeart } from 'react-icons/fi';
 import { useLocale } from '@/lib/LocaleContext';
 import { useCart } from '@/lib/CartContext';
@@ -26,7 +27,7 @@ export default function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
         <h1 className="text-2xl font-bold mb-2">404</h1>
         <p className="text-text-muted">
-          {locale === 'vi' ? 'San pham khong ton tai' : locale === 'cs' ? 'Produkt nenalezen' : 'Product not found'}
+          {locale === 'vi' ? 'Sản phẩm không tồn tại' : locale === 'cs' ? 'Produkt nenalezen' : 'Product not found'}
         </p>
       </div>
     );
@@ -66,13 +67,26 @@ export default function ProductDetailPage() {
       {/* Product detail */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {/* Image */}
-        <div className="aspect-square bg-sage-lightest rounded-lg flex items-center justify-center">
-          <div className="text-center text-text-muted">
-            <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-sage-light flex items-center justify-center">
-              <span className="text-2xl font-bold text-sage-darker">{product.brand.charAt(0)}</span>
+        <div className="aspect-square bg-sage-lightest rounded-lg overflow-hidden relative">
+          {product.images.length > 0 && product.images[0] !== '' ? (
+            <Image
+              src={product.images[0]}
+              alt={product.name[locale]}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-center text-text-muted">
+                <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-sage-light flex items-center justify-center">
+                  <span className="text-2xl font-bold text-sage-darker">{product.brand.charAt(0)}</span>
+                </div>
+                <p className="text-sm font-medium">{product.brand}</p>
+              </div>
             </div>
-            <p className="text-sm font-medium">{product.brand}</p>
-          </div>
+          )}
         </div>
 
         {/* Info */}
@@ -92,7 +106,7 @@ export default function ProductDetailPage() {
               ))}
             </div>
             <span className="text-sm text-text-secondary">
-              {product.rating} ({product.reviewCount} {locale === 'vi' ? 'danh gia' : locale === 'cs' ? 'hodnoceni' : 'reviews'})
+              {product.rating} ({product.reviewCount} {locale === 'vi' ? 'đánh giá' : locale === 'cs' ? 'hodnocení' : 'reviews'})
             </span>
           </div>
 
@@ -123,7 +137,7 @@ export default function ProductDetailPage() {
           {/* Quantity */}
           <div className="flex items-center gap-4 mb-6">
             <span className="text-sm font-medium text-charcoal">
-              {locale === 'vi' ? 'So luong:' : locale === 'cs' ? 'Mnozstvi:' : 'Quantity:'}
+              {locale === 'vi' ? 'Số lượng:' : locale === 'cs' ? 'Množství:' : 'Quantity:'}
             </span>
             <div className="flex items-center border border-border rounded-full overflow-hidden">
               <button
@@ -161,8 +175,8 @@ export default function ProductDetailPage() {
           {/* Stock status */}
           <p className={`text-xs mt-4 ${product.inStock ? 'text-sage-darker' : 'text-sale'}`}>
             {product.inStock
-              ? (locale === 'vi' ? 'Con hang' : locale === 'cs' ? 'Skladem' : 'In Stock')
-              : (locale === 'vi' ? 'Het hang' : locale === 'cs' ? 'Nedostupne' : 'Out of Stock')}
+              ? (locale === 'vi' ? 'Còn hàng' : locale === 'cs' ? 'Skladem' : 'In Stock')
+              : (locale === 'vi' ? 'Hết hàng' : locale === 'cs' ? 'Nedostupné' : 'Out of Stock')}
           </p>
         </div>
       </div>
@@ -171,7 +185,7 @@ export default function ProductDetailPage() {
       {relatedProducts.length > 0 && (
         <section>
           <h2 className="text-xl font-bold text-charcoal mb-6">
-            {locale === 'vi' ? 'San pham lien quan' : locale === 'cs' ? 'Souvisejici produkty' : 'Related Products'}
+            {locale === 'vi' ? 'Sản phẩm liên quan' : locale === 'cs' ? 'Související produkty' : 'Related Products'}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
             {relatedProducts.map((p) => (

@@ -16,18 +16,24 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative bg-sage-lightest">
-        <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 flex flex-col items-center text-center">
-          <Image src="/images/ShopLogo.png" alt="Trang Pham Cosmetics" width={200} height={80} className="h-20 w-auto mb-6 opacity-80" />
-          <h1 className="text-3xl md:text-5xl font-bold text-charcoal tracking-tight mb-3">
-            {t('home.hero.title', locale)}
-          </h1>
-          <p className="text-base md:text-lg text-text-secondary max-w-lg mb-8">
-            {t('home.hero.subtitle', locale)}
-          </p>
-          <Link href="/products" className="inline-flex items-center gap-2 bg-charcoal text-white px-8 py-3 rounded-full font-medium text-sm hover:bg-charcoal-light transition-colors">
-            {t('home.shopNow', locale)} <FiArrowRight size={16} />
-          </Link>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <Image src="/images/hero-banner.jpg" alt="Beauty" fill className="object-cover" priority />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-32">
+          <div className="max-w-lg">
+            <Image src="/images/ShopLogo.png" alt="Trang Pham Cosmetics" width={160} height={64} className="h-14 w-auto mb-6" />
+            <h1 className="font-[family-name:var(--font-playfair)] text-3xl md:text-5xl font-semibold text-charcoal tracking-tight mb-3 italic">
+              {t('home.hero.title', locale)}
+            </h1>
+            <p className="text-base md:text-lg text-text-secondary max-w-md mb-8">
+              {t('home.hero.subtitle', locale)}
+            </p>
+            <Link href="/products" className="inline-flex items-center gap-2 bg-charcoal text-white px-8 py-3 rounded-full font-medium text-sm hover:bg-charcoal-light transition-colors">
+              {t('home.shopNow', locale)} <FiArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -35,9 +41,9 @@ export default function HomePage() {
       <section className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-3 gap-4">
           {[
-            { icon: FiTruck, vi: 'Mien phi ship tu 1.500 CZK', cs: 'Doprava zdarma od 1.500 Kc', en: 'Free shipping over 1,500 CZK' },
-            { icon: FiShield, vi: '100% chinh hang', cs: '100% originalni', en: '100% Authentic' },
-            { icon: FiRefreshCw, vi: '14 ngay doi tra', cs: '14 dni na vraceni', en: '14-day returns' },
+            { icon: FiTruck, vi: 'Miễn phí ship từ 1.500 CZK', cs: 'Doprava zdarma od 1.500 Kč', en: 'Free shipping over 1,500 CZK' },
+            { icon: FiShield, vi: '100% chính hãng', cs: '100% originální', en: '100% Authentic' },
+            { icon: FiRefreshCw, vi: '14 ngày đổi trả', cs: '14 dní na vrácení', en: '14-day returns' },
           ].map((item, i) => (
             <div key={i} className="flex flex-col md:flex-row items-center gap-2 text-center md:text-left">
               <item.icon size={20} className="text-sage-dark shrink-0" />
@@ -93,10 +99,10 @@ export default function HomePage() {
       <section className="bg-sage-lightest">
         <div className="max-w-7xl mx-auto px-4 py-16 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-charcoal mb-3">
-            {locale === 'vi' ? 'K-Beauty chinh hang tai Sec' : locale === 'cs' ? 'Originalni K-Beauty v Cesku' : 'Authentic K-Beauty in Czech Republic'}
+            {locale === 'vi' ? 'K-Beauty chính hãng tại Séc' : locale === 'cs' ? 'Originální K-Beauty v Česku' : 'Authentic K-Beauty in Czech Republic'}
           </h2>
           <p className="text-text-secondary mb-6 max-w-md mx-auto">
-            {locale === 'vi' ? 'San pham tu cac thuong hieu Han Quoc uy tin' : locale === 'cs' ? 'Produkty od overenich korejskych znacek' : 'Products from trusted Korean brands'}
+            {locale === 'vi' ? 'Sản phẩm từ các thương hiệu Hàn Quốc uy tín' : locale === 'cs' ? 'Produkty od ověřených korejských značek' : 'Products from trusted Korean brands'}
           </p>
           <Link href="/products" className="inline-flex items-center gap-2 bg-sage text-white px-8 py-3 rounded-full font-medium text-sm hover:bg-sage-dark transition-colors">
             {t('home.shopNow', locale)} <FiArrowRight size={16} />

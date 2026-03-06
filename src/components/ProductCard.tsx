@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { FiShoppingBag } from 'react-icons/fi';
 import { Product } from '@/types';
 import { useLocale } from '@/lib/LocaleContext';
@@ -13,19 +14,30 @@ export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
 
   const discount = product.originalPrice ? getDiscountPercent(product.price, product.originalPrice) : 0;
+  const hasImage = product.images.length > 0 && product.images[0] !== '';
 
   return (
     <div className="group">
       {/* Image */}
       <Link href={`/products/${product.slug}`} className="block relative aspect-square rounded-lg overflow-hidden bg-sage-lightest mb-3">
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="text-center p-4">
-            <div className="w-14 h-14 mx-auto mb-2 rounded-full bg-sage-light flex items-center justify-center text-sage-darker text-lg font-bold">
-              {product.brand.charAt(0)}
+        {hasImage ? (
+          <Image
+            src={product.images[0]}
+            alt={product.name[locale]}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="text-center p-4">
+              <div className="w-14 h-14 mx-auto mb-2 rounded-full bg-sage-light flex items-center justify-center text-sage-darker text-lg font-bold">
+                {product.brand.charAt(0)}
+              </div>
+              <span className="text-xs text-text-muted">{product.brand}</span>
             </div>
-            <span className="text-xs text-text-muted">{product.brand}</span>
           </div>
-        </div>
+        )}
         {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {product.isNew && (

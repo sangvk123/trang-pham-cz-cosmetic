@@ -5,8 +5,8 @@ export const storeInfo: StoreInfo = {
   phone: ['(+420) 607 715 020'],
   email: 'info@trangphamcosmetics.cz',
   address: {
-    vi: 'Praha, Cong hoa Sec',
-    cs: 'Praha, Ceska republika',
+    vi: 'Praha, Cộng hòa Séc',
+    cs: 'Praha, Česká republika',
     en: 'Prague, Czech Republic',
   },
   socialMedia: {

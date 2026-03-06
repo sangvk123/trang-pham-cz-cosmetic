@@ -64,7 +64,7 @@ export default function CategoryPage() {
       {category?.subcategories && (
         <div className="flex flex-wrap gap-2 mb-8">
           <Link href={`/category/${category.slug}`} className={`text-xs px-4 py-2 rounded-full border transition-colors ${!sub ? 'bg-charcoal text-white border-charcoal' : 'border-border hover:border-sage-dark'}`}>
-            {locale === 'vi' ? 'Tat ca' : locale === 'cs' ? 'Vse' : 'All'}
+            {locale === 'vi' ? 'Tất cả' : locale === 'cs' ? 'Vše' : 'All'}
           </Link>
           {category.subcategories.map((s) => (
             <Link key={s.id} href={`/category/${s.slug}`} className={`text-xs px-4 py-2 rounded-full border transition-colors ${sub?.id === s.id ? 'bg-charcoal text-white border-charcoal' : 'border-border hover:border-sage-dark'}`}>
