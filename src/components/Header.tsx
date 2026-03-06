@@ -56,7 +56,7 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           {/* Mobile menu button */}
           <button
-            className="lg:hidden p-1.5 hover:bg-sage-lightest rounded-lg transition-colors"
+            className="lg:hidden p-2 hover:bg-sage-lightest rounded-lg transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menu"
           >
@@ -185,28 +185,28 @@ export default function Header() {
 
         {/* Drawer */}
         <nav
-          className={`absolute top-0 left-0 w-[300px] max-w-[85vw] h-full bg-white shadow-2xl overflow-y-auto transition-transform duration-500 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          className={`absolute top-0 left-0 w-full h-full bg-white shadow-2xl overflow-y-auto transition-transform duration-500 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
           style={{ transitionTimingFunction: 'cubic-bezier(.6, 0, .4, 1)' }}
         >
           {/* Drawer header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-            <Image src="/images/ShopLogo.png" alt="Trang Pham Cosmetics" width={100} height={40} className="h-9 w-auto" />
+          <div className="flex items-center justify-between px-6 py-5 border-b border-border">
+            <Image src="/images/ShopLogo.png" alt="Trang Pham Cosmetics" width={120} height={48} className="h-11 w-auto" />
             <button
               onClick={() => setMobileOpen(false)}
-              className="p-1.5 hover:bg-sage-lightest rounded-lg transition-colors duration-200"
+              className="p-2 hover:bg-sage-lightest rounded-lg transition-colors duration-200"
             >
-              <FiX size={20} />
+              <FiX size={24} />
             </button>
           </div>
 
           {/* Categories accordion */}
-          <div className="py-2">
+          <div className="py-3">
             {categories.map((cat) => (
               <div key={cat.id} className="border-b border-border-light last:border-0">
                 <div className="flex items-center">
                   <Link
                     href={`/category/${cat.slug}`}
-                    className="flex-1 px-5 py-3.5 text-sm font-semibold text-charcoal uppercase tracking-wide hover:text-sage-darker transition-colors duration-200"
+                    className="flex-1 px-6 py-4 text-base font-semibold text-charcoal uppercase tracking-wide hover:text-sage-darker transition-colors duration-200"
                     onClick={() => setMobileOpen(false)}
                   >
                     {cat.name[locale]}
@@ -214,10 +214,10 @@ export default function Header() {
                   {cat.subcategories && (
                     <button
                       onClick={() => toggleMobileCategory(cat.id)}
-                      className="px-4 py-3.5 text-text-muted hover:text-charcoal transition-colors duration-200"
+                      className="px-6 py-4 text-text-muted hover:text-charcoal transition-colors duration-200"
                     >
                       <FiChevronDown
-                        size={16}
+                        size={20}
                         className={`transition-transform duration-300 ${expandedMobile === cat.id ? 'rotate-180' : ''}`}
                         style={{ transitionTimingFunction: 'cubic-bezier(.6, 0, .4, 1)' }}
                       />
@@ -229,17 +229,17 @@ export default function Header() {
                   <div
                     className="overflow-hidden transition-all duration-400"
                     style={{
-                      maxHeight: expandedMobile === cat.id ? `${cat.subcategories.length * 44 + 8}px` : '0px',
+                      maxHeight: expandedMobile === cat.id ? `${cat.subcategories.length * 52 + 16}px` : '0px',
                       opacity: expandedMobile === cat.id ? 1 : 0,
                       transitionTimingFunction: 'cubic-bezier(.3, 1, .3, 1)',
                     }}
                   >
-                    <div className="bg-cream/60 py-1">
+                    <div className="bg-cream/60 py-2">
                       {cat.subcategories.map((sub, i) => (
                         <Link
                           key={sub.id}
                           href={`/category/${sub.slug}`}
-                          className="flex items-center gap-2 px-8 py-2.5 text-sm text-text-secondary hover:text-sage-darker hover:bg-sage-lightest/50 transition-all duration-200"
+                          className="flex items-center gap-3 px-10 py-3 text-[15px] text-text-secondary hover:text-sage-darker hover:bg-sage-lightest/50 transition-all duration-200"
                           onClick={() => setMobileOpen(false)}
                           style={{
                             transitionDelay: expandedMobile === cat.id ? `${i * 30}ms` : '0ms',
@@ -256,10 +256,10 @@ export default function Header() {
             ))}
 
             {/* In Stock link */}
-            <div className="border-t border-border mt-1 pt-1">
+            <div className="border-t border-border mt-2 pt-2">
               <Link
                 href="/category/instock"
-                className="block px-5 py-3.5 text-sm font-semibold text-sage-darker uppercase tracking-wide hover:bg-sage-lightest transition-colors duration-200"
+                className="block px-6 py-4 text-base font-semibold text-sage-darker uppercase tracking-wide hover:bg-sage-lightest transition-colors duration-200"
                 onClick={() => setMobileOpen(false)}
               >
                 {t('nav.bestsellers', locale)}
@@ -267,13 +267,13 @@ export default function Header() {
             </div>
 
             {/* Mobile account link */}
-            <div className="border-t border-border mt-1 pt-1">
+            <div className="border-t border-border mt-2 pt-2">
               <Link
                 href="/account"
-                className="flex items-center gap-2 px-5 py-3.5 text-sm text-charcoal hover:bg-sage-lightest transition-colors duration-200"
+                className="flex items-center gap-3 px-6 py-4 text-base text-charcoal hover:bg-sage-lightest transition-colors duration-200"
                 onClick={() => setMobileOpen(false)}
               >
-                <FiUser size={16} />
+                <FiUser size={20} />
                 {t('account.login', locale)}
               </Link>
             </div>
