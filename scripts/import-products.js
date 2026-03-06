@@ -24,25 +24,25 @@ const IMAGES_DIR = path.resolve(__dirname, '../public/images/products');
 // Map nhom hang Excel -> category + subcategory
 // Standardized names after xlsx cleanup
 const CATEGORY_MAP = {
-  // Skincare
-  'Sữa Rửa Mặt':     { category: 'skincare', subcategory: 'cleanser' },
-  'Tẩy Trang':        { category: 'skincare', subcategory: 'cleanser' },
+  // Skincare - itsskinlab style
+  'Tẩy Trang':        { category: 'skincare', subcategory: 'oil-cleanser' },
+  'Sữa Rửa Mặt':     { category: 'skincare', subcategory: 'water-cleanser' },
   'Toner':            { category: 'skincare', subcategory: 'toner' },
   'Toner Pad':        { category: 'skincare', subcategory: 'toner-pad' },
   'Serum':            { category: 'skincare', subcategory: 'serum' },
-  'Treatment':        { category: 'skincare', subcategory: 'treatment' },
   'Kem dưỡng':        { category: 'skincare', subcategory: 'moisturizer' },
   'Kem chống nắng':   { category: 'skincare', subcategory: 'sunscreen' },
-  'Mask':             { category: 'skincare', subcategory: 'mask' },
   'Kem mắt':          { category: 'skincare', subcategory: 'eye-care' },
+  'Mask':             { category: 'skincare', subcategory: 'mask' },
+  'Treatment':        { category: 'skincare', subcategory: 'treatment' },
+  'Dưỡng môi':        { category: 'skincare', subcategory: 'lip-care' },
 
-  // Makeup
+  // Makeup - itsskinlab style
   'Makeup':           { category: 'makeup', subcategory: 'face' },
   'Cushion':          { category: 'makeup', subcategory: 'face' },
   'Son':              { category: 'makeup', subcategory: 'lips' },
-  'Dưỡng môi':        { category: 'makeup', subcategory: 'lip-care' },
 
-  // Body Care
+  // Body & Hair
   'Kem body':         { category: 'bodycare', subcategory: 'body' },
   'Dưỡng Tóc':       { category: 'bodycare', subcategory: 'haircare' },
   'Nước hoa':         { category: 'bodycare', subcategory: 'fragrance' },
