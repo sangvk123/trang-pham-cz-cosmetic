@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FiSearch, FiShoppingBag, FiUser, FiMenu, FiX, FiChevronDown, FiChevronRight } from 'react-icons/fi';
@@ -8,6 +8,7 @@ import { useLocale } from '@/lib/LocaleContext';
 import { useCart } from '@/lib/CartContext';
 import { t, localeFlags, localeNames } from '@/lib/i18n';
 import { categories } from '@/data/categories';
+import { products } from '@/data/products';
 import { Locale } from '@/types';
 
 export default function Header() {
@@ -18,7 +19,20 @@ export default function Header() {
   const [langOpen, setLangOpen] = useState(false);
   const [megaMenu, setMegaMenu] = useState<string | null>(null);
   const [expandedMobile, setExpandedMobile] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+
+  // Product count per category/subcategory
+  const productCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of products) {
+      counts[p.category] = (counts[p.category] || 0) + 1;
+      if (p.subcategory) {
+        counts[p.subcategory] = (counts[p.subcategory] || 0) + 1;
+      }
+    }
+    return counts;
+  }, []);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -26,6 +40,18 @@ export default function Header() {
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Hide announcement bar on scroll
+  useEffect(() => {
+    let lastY = 0;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 40);
+      lastY = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   // Lock body scroll when mobile menu is open
@@ -39,21 +65,28 @@ export default function Header() {
   }, [mobileOpen]);
 
   const toggleMobileCategory = (id: string) => {
-    setExpandedMobile(expandedMobile === id ? null : id);
+    setExpandedMobile((prev) => (prev === id ? null : id));
   };
 
   return (
     <header className="sticky top-0 z-50">
-      {/* Announcement bar */}
-      <div className="bg-sage text-white text-xs tracking-wide">
+      {/* Announcement bar - hides on scroll */}
+      <div
+        className="bg-sage text-white text-xs tracking-wide overflow-hidden transition-all duration-400"
+        style={{
+          maxHeight: scrolled ? '0px' : '36px',
+          opacity: scrolled ? 0 : 1,
+          transitionTimingFunction: 'cubic-bezier(.3, 1, .3, 1)',
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-2 text-center font-medium">
           {t('announcement', locale)}
         </div>
       </div>
 
-      {/* Main header */}
+      {/* Main header - compact on scroll */}
       <div className="bg-white border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <div className={`max-w-7xl mx-auto px-4 flex items-center justify-between gap-4 transition-all duration-300 ${scrolled ? 'py-1.5' : 'py-3'}`}>
           {/* Mobile menu button */}
           <button
             className="lg:hidden p-2 hover:bg-sage-lightest rounded-lg transition-colors"
@@ -65,7 +98,14 @@ export default function Header() {
 
           {/* Logo */}
           <Link href="/" className="shrink-0">
-            <Image src="/images/ShopLogo.png" alt="Trang Pham Cosmetics" width={140} height={56} className="h-12 w-auto" priority />
+            <Image
+              src="/images/ShopLogo.png"
+              alt="Trang Pham Cosmetics"
+              width={140}
+              height={56}
+              className={`w-auto transition-all duration-300 ${scrolled ? 'h-9' : 'h-12'}`}
+              priority
+            />
           </Link>
 
           {/* Desktop nav */}
@@ -98,9 +138,10 @@ export default function Header() {
                         <Link
                           key={sub.id}
                           href={`/category/${sub.slug}`}
-                          className="block px-5 py-2 text-sm text-text-secondary hover:text-sage-darker hover:bg-sage-lightest hover:pl-6 transition-all duration-200"
+                          className="flex items-center justify-between px-5 py-2 text-sm text-text-secondary hover:text-sage-darker hover:bg-sage-lightest hover:pl-6 transition-all duration-200"
                         >
-                          {sub.name[locale]}
+                          <span>{sub.name[locale]}</span>
+                          <span className="text-xs text-text-muted">{productCounts[sub.id] || 0}</span>
                         </Link>
                       ))}
                     </div>
@@ -210,6 +251,9 @@ export default function Header() {
                     onClick={() => setMobileOpen(false)}
                   >
                     {cat.name[locale]}
+                    <span className="text-xs font-normal text-text-muted ml-2 normal-case">
+                      ({productCounts[cat.id] || 0})
+                    </span>
                   </Link>
                   {cat.subcategories && (
                     <button
@@ -246,7 +290,8 @@ export default function Header() {
                           }}
                         >
                           <FiChevronRight size={12} className="text-sage-dark" />
-                          {sub.name[locale]}
+                          <span className="flex-1">{sub.name[locale]}</span>
+                          <span className="text-xs text-text-muted">{productCounts[sub.id] || 0}</span>
                         </Link>
                       ))}
                     </div>
@@ -263,6 +308,9 @@ export default function Header() {
                 onClick={() => setMobileOpen(false)}
               >
                 {t('nav.bestsellers', locale)}
+                <span className="text-xs font-normal text-text-muted ml-2 normal-case">
+                  ({products.filter(p => p.inStock).length})
+                </span>
               </Link>
             </div>
 
