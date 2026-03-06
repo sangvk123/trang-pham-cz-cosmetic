@@ -55,8 +55,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate name
-    if (name && (typeof name !== 'string' || name.trim().length > 100)) {
+    // Validate and sanitize name (strip HTML tags)
+    const sanitizedName = name && typeof name === 'string'
+      ? name.replace(/<[^>]*>/g, '').trim().slice(0, 100)
+      : null;
+
+    if (name && typeof name === 'string' && sanitizedName && sanitizedName.length === 0) {
       return NextResponse.json({ error: 'Invalid name' }, { status: 400 });
     }
 
@@ -78,7 +82,7 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.create({
       data: {
         email: normalizedEmail,
-        name: name?.trim() || null,
+        name: sanitizedName || null,
         passwordHash,
       },
     });
