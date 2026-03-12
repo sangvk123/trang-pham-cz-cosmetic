@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { useLocale } from '@/lib/LocaleContext';
@@ -16,6 +16,18 @@ export default function CategoryPage() {
   const { locale } = useLocale();
   const [sortBy, setSortBy] = useState('popular');
   const [sidebarOpen, setSidebarOpen] = useState<string | null>(null);
+
+  // Product counts per category/subcategory
+  const productCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of products) {
+      counts[p.category] = (counts[p.category] || 0) + 1;
+      if (p.subcategory) {
+        counts[p.subcategory] = (counts[p.subcategory] || 0) + 1;
+      }
+    }
+    return counts;
+  }, []);
 
   // Find current category/subcategory
   const category = categories.find((c) => c.slug === slug || c.subcategories?.some((s) => s.slug === slug));
@@ -90,6 +102,7 @@ export default function CategoryPage() {
                         }`}
                       >
                         {cat.name[locale]}
+                        <span className="text-xs text-text-muted ml-1">({productCounts[cat.id] || 0})</span>
                       </Link>
                       {cat.subcategories && (
                         <button
@@ -128,6 +141,7 @@ export default function CategoryPage() {
                               >
                                 <FiChevronRight size={10} className={isSubActive ? 'text-sage-darker' : 'text-border'} />
                                 {s.name[locale]}
+                                <span className="text-xs text-text-muted ml-auto">{productCounts[s.id] || 0}</span>
                               </Link>
                             );
                           })}
@@ -187,7 +201,7 @@ export default function CategoryPage() {
                   href={`/category/${s.slug}`}
                   className="text-xs px-4 py-2 rounded-full border border-border hover:border-sage-dark hover:text-sage-darker transition-all duration-200"
                 >
-                  {s.name[locale]}
+                  {s.name[locale]} ({productCounts[s.id] || 0})
                 </Link>
               ))}
             </div>

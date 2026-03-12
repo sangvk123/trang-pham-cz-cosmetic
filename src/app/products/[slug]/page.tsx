@@ -19,6 +19,7 @@ export default function ProductDetailPage() {
   const { locale } = useLocale();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState<number>(0);
 
   const product = products.find((p) => p.slug === slug);
 
@@ -102,6 +103,32 @@ export default function ProductDetailPage() {
               {formatPrice(product.price)}
             </span>
           </div>
+
+          {/* Color variants - only show when >1 color */}
+          {product.colors && product.colors.length > 1 && (
+            <div className="mb-5">
+              <p className="text-sm font-medium text-charcoal mb-3">
+                {locale === 'vi' ? 'Màu sắc' : locale === 'cs' ? 'Barva' : 'Color'}:{' '}
+                <span className="font-bold">{product.colors[selectedColor].name}</span>
+              </p>
+              <div className="flex flex-wrap gap-2.5">
+                {product.colors.map((color, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedColor(idx)}
+                    className={`w-9 h-9 rounded-full transition-all duration-200 ${
+                      selectedColor === idx
+                        ? 'ring-2 ring-offset-2 ring-charcoal scale-110'
+                        : 'hover:scale-105 hover:ring-1 hover:ring-offset-1 hover:ring-border'
+                    }`}
+                    style={{ backgroundColor: color.hex }}
+                    title={color.name}
+                    aria-label={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Description */}
           {product.description && (

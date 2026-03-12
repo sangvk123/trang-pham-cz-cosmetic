@@ -1,5 +1,10 @@
 export type Locale = 'vi' | 'cs' | 'en';
 
+export interface ColorVariant {
+  name: string;
+  hex: string;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -13,6 +18,7 @@ export interface Product {
   stock: number;
   inStock: boolean;
   group: string;
+  colors?: ColorVariant[];
 }
 
 export interface Category {

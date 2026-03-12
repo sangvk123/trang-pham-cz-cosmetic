@@ -3,14 +3,17 @@
 /**
  * Import products from DanhMucSanPham.xlsx -> src/data/products.json
  *
- * Col Excel:
- *   Nhom hang(3 Cap), Ma hang, Ten hang, Thuong hieu, Gia ban,
- *   Ton kho, Dang kinh doanh, Mo ta
- *
- * Logic:
- *   - Chi import san pham co "Dang kinh doanh" = 1
- *   - Ton kho > 0 -> inStock: true
- *   - Nhom hang -> map sang category/subcategory
+ * Excel columns (after restructure):
+ *   A: Nhóm hàng(3 Cấp)  - MAKEUP, SKINCARE, BODYCARE, OTHER
+ *   B: Tiểu mục           - Face, Eyes, Lips, Serum, Mask, etc.
+ *   C: Mã hàng
+ *   D: Tên hàng
+ *   E: Thương hiệu
+ *   F: Giá bán
+ *   G: Giá vốn
+ *   H: Tồn kho
+ *   O: Mô tả
+ *   Q: Phân loại màu      - "CR02 Boy:#E84B4B, PK01 Girl:#F5A0B0"
  */
 
 const XLSX = require('xlsx');
@@ -21,36 +24,39 @@ const EXCEL_PATH = path.resolve(__dirname, '../../DanhMucSanPham.xlsx');
 const OUTPUT_PATH = path.resolve(__dirname, '../src/data/products.json');
 const IMAGES_DIR = path.resolve(__dirname, '../public/images/products');
 
-// Map nhom hang Excel -> category + subcategory
-// Standardized names after xlsx cleanup
-const CATEGORY_MAP = {
-  // Skincare - itsskinlab style
-  'Tẩy Trang':        { category: 'skincare', subcategory: 'oil-cleanser' },
-  'Sữa Rửa Mặt':     { category: 'skincare', subcategory: 'water-cleanser' },
-  'Toner':            { category: 'skincare', subcategory: 'toner' },
-  'Toner Pad':        { category: 'skincare', subcategory: 'toner-pad' },
-  'Serum':            { category: 'skincare', subcategory: 'serum' },
-  'Kem dưỡng':        { category: 'skincare', subcategory: 'moisturizer' },
-  'Kem chống nắng':   { category: 'skincare', subcategory: 'sunscreen' },
-  'Kem mắt':          { category: 'skincare', subcategory: 'eye-care' },
-  'Mask':             { category: 'skincare', subcategory: 'mask' },
-  'Treatment':        { category: 'skincare', subcategory: 'treatment' },
-  'Dưỡng môi':        { category: 'skincare', subcategory: 'lip-care' },
+// Map Nhóm hàng (uppercase) -> category id
+const GROUP_MAP = {
+  'MAKEUP': 'makeup',
+  'SKINCARE': 'skincare',
+  'BODYCARE': 'bodycare',
+  'OTHER': 'other',
+};
 
-  // Makeup - itsskinlab style
-  'Makeup':           { category: 'makeup', subcategory: 'face' },
-  'Cushion':          { category: 'makeup', subcategory: 'face' },
-  'Son':              { category: 'makeup', subcategory: 'lips' },
-
+// Map Tiểu mục -> subcategory id
+const SUB_MAP = {
+  // Skincare
+  'Tẩy Trang': 'oil-cleanser',
+  'Sữa Rửa Mặt': 'water-cleanser',
+  'Toner': 'toner',
+  'Toner Pad': 'toner-pad',
+  'Serum': 'serum',
+  'Kem dưỡng': 'moisturizer',
+  'Kem chống nắng': 'sunscreen',
+  'Kem mắt': 'eye-care',
+  'Mask': 'mask',
+  'Treatment': 'treatment',
+  'Dưỡng môi': 'lip-care',
+  // Makeup
+  'Face': 'face',
+  'Lips': 'lips',
+  'Eyes': 'eyes',
   // Body & Hair
-  'Kem body':         { category: 'bodycare', subcategory: 'body' },
-  'Dưỡng Tóc':       { category: 'bodycare', subcategory: 'haircare' },
-  'Nước hoa':         { category: 'bodycare', subcategory: 'fragrance' },
-
+  'Body': 'body',
+  'Haircare': 'haircare',
+  'Fragrance': 'fragrance',
   // Other
-  'TPCN':             { category: 'other', subcategory: 'supplements' },
-  'Thiết bị làm đẹp': { category: 'other', subcategory: 'tools' },
-  'Khác':             { category: 'other', subcategory: null },
+  'TPCN': 'supplements',
+  'Thiết bị': 'tools',
 };
 
 function slugify(text) {
@@ -64,11 +70,37 @@ function slugify(text) {
     .substring(0, 80);
 }
 
+/**
+ * Parse color string: "CR02 Boy:#E84B4B, PK01 Girl:#F5A0B0"
+ * Returns: [{ name: "CR02 Boy", hex: "#E84B4B" }, ...]
+ */
+function parseColors(colorStr) {
+  if (!colorStr || typeof colorStr !== 'string') return [];
+
+  const colors = [];
+  const parts = colorStr.split(',').map(s => s.trim()).filter(Boolean);
+
+  for (const part of parts) {
+    const colonIdx = part.lastIndexOf(':');
+    if (colonIdx === -1) continue;
+
+    const name = part.substring(0, colonIdx).trim();
+    const hex = part.substring(colonIdx + 1).trim();
+
+    if (name && hex && /^#[0-9a-fA-F]{3,8}$/.test(hex)) {
+      colors.push({ name, hex });
+    }
+  }
+
+  return colors;
+}
+
 function getProductImage(maHang, excelImages) {
   if (excelImages) {
     const urls = excelImages.split(',').map(u => u.trim()).filter(Boolean);
     if (urls.length > 0) return urls;
   }
+  if (!maHang) return [];
   const extensions = ['.jpg', '.jpeg', '.png', '.webp'];
   for (const ext of extensions) {
     const localPath = path.join(IMAGES_DIR, maHang + ext);
@@ -93,64 +125,85 @@ function main() {
 
   const products = [];
   const usedSlugs = new Set();
+  let autoId = 1;
 
   for (const row of rows) {
-    if (row['Đang kinh doanh'] !== 1) continue;
-
-    const nhomHang = row['Nhóm hàng(3 Cấp)'] || 'Khác';
-    if (['Clothes', 'Quần áo', 'Hình thức lấy hàng'].includes(nhomHang)) continue;
-
+    const nhomHang = (row['Nhóm hàng(3 Cấp)'] || '').trim().toUpperCase();
+    const tieuMuc = (row['Tiểu mục'] || '').trim();
     const maHang = row['Mã hàng'] || '';
-    const tenHang = row['Tên hàng'] || '';
-    const thuongHieu = row['Thương hiệu'] || '';
+    const tenHang = (row['Tên hàng'] || '').trim();
+    const thuongHieu = (row['Thương hiệu'] || '').trim();
     const giaBan = Number(row['Giá bán']) || 0;
     const tonKho = Number(row['Tồn kho']) || 0;
     const moTa = row['Mô tả'] || '';
-    const excelImages = row['Hình ảnh (url1,url2...)'] || null;
+    const colorStr = row['Phân loại màu'] || '';
 
+    // Skip empty rows or rows without name/price
     if (!tenHang || giaBan <= 0) continue;
+    // Skip non-product categories
+    if (['CLOTHES', 'QUẦN ÁO'].includes(nhomHang)) continue;
+
+    // Generate ID if missing
+    const id = maHang || `SP${String(autoId++).padStart(4, '0')}`;
 
     let slug = slugify(tenHang);
     if (usedSlugs.has(slug)) {
-      slug = slug + '-' + maHang.toLowerCase();
+      slug = slug + '-' + id.toLowerCase();
     }
     usedSlugs.add(slug);
 
-    const catMap = CATEGORY_MAP[nhomHang] || { category: 'other', subcategory: null };
-    const images = getProductImage(maHang, excelImages);
+    const category = GROUP_MAP[nhomHang] || 'other';
+    const subcategory = SUB_MAP[tieuMuc] || null;
+    const colors = parseColors(colorStr);
+    const images = getProductImage(maHang);
 
-    products.push({
-      id: maHang,
+    const product = {
+      id,
       slug,
       name: tenHang,
       brand: thuongHieu,
       price: giaBan,
       stock: tonKho,
       inStock: tonKho > 0,
-      category: catMap.category,
-      subcategory: catMap.subcategory,
+      category,
+      subcategory,
       description: moTa,
       images,
       group: nhomHang,
-    });
+    };
+
+    // Only add colors if there are variants (>1 color)
+    if (colors.length > 0) {
+      product.colors = colors;
+    }
+
+    products.push(product);
   }
 
   products.sort((a, b) => {
     if (a.inStock !== b.inStock) return a.inStock ? -1 : 1;
-    return a.group.localeCompare(b.group);
+    return (a.category + (a.subcategory || '')).localeCompare(b.category + (b.subcategory || ''));
   });
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(products, null, 2), 'utf-8');
 
   const inStockCount = products.filter(p => p.inStock).length;
   const withImages = products.filter(p => p.images.length > 0).length;
+  const withColors = products.filter(p => p.colors && p.colors.length > 0).length;
   const catStats = {};
-  products.forEach(p => { catStats[p.category] = (catStats[p.category] || 0) + 1; });
+  const subStats = {};
+  products.forEach(p => {
+    catStats[p.category] = (catStats[p.category] || 0) + 1;
+    if (p.subcategory) subStats[p.subcategory] = (subStats[p.subcategory] || 0) + 1;
+  });
+
   console.log(`\nDone! Exported ${products.length} products to products.json`);
   console.log(`  In stock: ${inStockCount}`);
   console.log(`  Out of stock: ${products.length - inStockCount}`);
   console.log(`  With images: ${withImages}`);
+  console.log(`  With colors: ${withColors}`);
   console.log(`  Categories:`, catStats);
+  console.log(`  Subcategories:`, subStats);
 }
 
 main();
