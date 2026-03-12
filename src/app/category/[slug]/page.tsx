@@ -9,11 +9,13 @@ import { t } from '@/lib/i18n';
 import { categories } from '@/data/categories';
 import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
+import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 export default function CategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
   const { locale } = useLocale();
+  useScrollReveal();
   const [sortBy, setSortBy] = useState('popular');
   const [sidebarOpen, setSidebarOpen] = useState<string | null>(null);
 

@@ -56,6 +56,94 @@
     "group": "MAKEUP"
   },
   {
+    "id": "LNGE-CS01",
+    "slug": "laneige-neo-cushion-matte-matte-cushion-foundation-spf42",
+    "name": "LANEIGE Neo Cushion Matte - Matte Cushion Foundation SPF42",
+    "brand": "LANEIGE",
+    "price": 649,
+    "stock": 3,
+    "inStock": true,
+    "category": "makeup",
+    "subcategory": "face",
+    "description": "Cushion nền mịn lì, kiềm dầu, bảo vệ da khỏi tia UV. SPF42 PA++",
+    "images": [],
+    "group": "MAKEUP",
+    "colors": [
+      {
+        "name": "21N Beige",
+        "hex": "#F5DEB3"
+      },
+      {
+        "name": "23N Sand",
+        "hex": "#DEB887"
+      }
+    ]
+  },
+  {
+    "id": "FWEE-PP01",
+    "slug": "fwee-lip-cheek-blurry-pudding-pot-creamy-lip-and-cheek-balm-pendant-keyring",
+    "name": "fwee - Lip & Cheek Blurry Pudding Pot - Creamy lip and cheek balm (+ Pendant Keyring)",
+    "brand": "fwee",
+    "price": 499,
+    "stock": 15,
+    "inStock": true,
+    "category": "makeup",
+    "subcategory": "lips",
+    "description": "Kem dưỡng môi và má hồng dạng pudding, kèm móc khóa trang trí. Lên màu tự nhiên, mềm mịn suốt cả ngày.",
+    "images": [],
+    "group": "MAKEUP",
+    "colors": [
+      {
+        "name": "CR02 Boy",
+        "hex": "#D94F4F"
+      },
+      {
+        "name": "PK03 Cute",
+        "hex": "#E8A0B0"
+      },
+      {
+        "name": "PK05 Shy",
+        "hex": "#F5C6D0"
+      },
+      {
+        "name": "RD01 Bold",
+        "hex": "#B22222"
+      },
+      {
+        "name": "BR01 Warm",
+        "hex": "#A0522D"
+      }
+    ]
+  },
+  {
+    "id": "ROM-JL01",
+    "slug": "rom-nd-juicy-lasting-tint-long-lasting-lip-tint",
+    "name": "rom&nd Juicy Lasting Tint - Long-lasting lip tint",
+    "brand": "rom&nd",
+    "price": 349,
+    "stock": 8,
+    "inStock": true,
+    "category": "makeup",
+    "subcategory": "lips",
+    "description": "Son tint lâu trôi với hiệu ứng bóng mọng, giữ màu suốt cả ngày.",
+    "images": [],
+    "group": "MAKEUP",
+    "colors": [
+      {
+        "name": "Figfig",
+        "hex": "#C94C66"
+      },
+      {
+        "name": "Nucadamia",
+        "hex": "#D4876E"
+      },
+      {
+        "name": "Jujube",
+        "hex": "#A63D40"
+      }
+    ]
+  },
+  {
     "id": "SP0007",
     "slug": "medianswer-calming-collagen-nano-shot-mask-1pc",
     "name": "MediAnswer Calming Collagen Nano Shot Mask 1pc",
