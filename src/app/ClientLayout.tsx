@@ -10,6 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FloatingContact from '@/components/FloatingContact';
 import BackToTop from '@/components/BackToTop';
+import CookieConsent from '@/components/CookieConsent';
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   return (
@@ -24,6 +25,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
           <Footer />
           <FloatingContact />
           <BackToTop />
+          <CookieConsent />
         </div>
         </WishlistProvider>
         </ToastProvider>

@@ -12,6 +12,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/faq`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${baseUrl}/shipping`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${baseUrl}/returns`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.4 },
+    { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.3 },
+    { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.3 },
+    { url: `${baseUrl}/complaints`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.3 },
+    { url: `${baseUrl}/withdrawal`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.3 },
   ];
 
   const categoryPages = categories.flatMap((cat) => {

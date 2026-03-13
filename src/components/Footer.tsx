@@ -97,6 +97,26 @@ export default function Footer() {
                   {t('footer.returns', locale)}
                 </Link>
               </li>
+              <li>
+                <Link href="/terms" className="hover:text-sage-darker transition-colors duration-200">
+                  {locale === 'cs' ? 'Obchodní podmínky' : locale === 'vi' ? 'Điều khoản' : 'Terms'}
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-sage-darker transition-colors duration-200">
+                  {locale === 'cs' ? 'Ochrana údajů' : locale === 'vi' ? 'Bảo mật' : 'Privacy'}
+                </Link>
+              </li>
+              <li>
+                <Link href="/complaints" className="hover:text-sage-darker transition-colors duration-200">
+                  {locale === 'cs' ? 'Reklamační řád' : locale === 'vi' ? 'Khiếu nại' : 'Complaints'}
+                </Link>
+              </li>
+              <li>
+                <Link href="/withdrawal" className="hover:text-sage-darker transition-colors duration-200">
+                  {locale === 'cs' ? 'Odstoupení od smlouvy' : locale === 'vi' ? 'Hủy đơn' : 'Withdrawal'}
+                </Link>
+              </li>
             </ul>
           </div>
 

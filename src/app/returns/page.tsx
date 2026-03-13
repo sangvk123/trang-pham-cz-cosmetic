@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { FiCalendar, FiCheckCircle, FiRefreshCw, FiCreditCard } from 'react-icons/fi';
 import { useLocale } from '@/lib/LocaleContext';
 import { t } from '@/lib/i18n';
@@ -39,6 +40,15 @@ export default function ReturnsPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-8 text-center">
+        <Link
+          href="/withdrawal"
+          className="inline-block bg-charcoal text-white text-sm font-medium py-3 px-8 rounded-full hover:bg-charcoal-light transition-colors"
+        >
+          {locale === 'cs' ? 'Formulář pro odstoupení od smlouvy' : locale === 'vi' ? 'Mẫu đơn hủy đơn hàng' : 'Withdrawal Form'}
+        </Link>
       </div>
     </div>
   );
