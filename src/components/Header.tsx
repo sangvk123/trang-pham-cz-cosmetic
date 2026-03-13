@@ -3,24 +3,29 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiSearch, FiShoppingBag, FiUser, FiMenu, FiX, FiChevronDown, FiChevronRight } from 'react-icons/fi';
+import { FiSearch, FiShoppingBag, FiUser, FiMenu, FiX, FiChevronDown, FiChevronRight, FiHeart } from 'react-icons/fi';
 import { useLocale } from '@/lib/LocaleContext';
 import { useCart } from '@/lib/CartContext';
+import { useWishlist } from '@/lib/WishlistContext';
 import { t, localeFlags, localeNames } from '@/lib/i18n';
 import { categories } from '@/data/categories';
 import { products } from '@/data/products';
+import { formatPrice } from '@/lib/utils';
 import { Locale } from '@/types';
 
 export default function Header() {
   const { locale, setLocale } = useLocale();
   const { totalItems } = useCart();
+  const { wishlistIds } = useWishlist();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [langOpen, setLangOpen] = useState(false);
   const [megaMenu, setMegaMenu] = useState<string | null>(null);
   const [expandedMobile, setExpandedMobile] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   // Product count per category/subcategory
   const productCounts = useMemo(() => {
@@ -34,6 +39,15 @@ export default function Header() {
     return counts;
   }, []);
 
+  // Search results
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase();
+    return products
+      .filter((p) => p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.group.toLowerCase().includes(q))
+      .slice(0, 6);
+  }, [searchQuery]);
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
@@ -44,11 +58,8 @@ export default function Header() {
 
   // Hide announcement bar on scroll
   useEffect(() => {
-    let lastY = 0;
     const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 40);
-      lastY = y;
+      setScrolled(window.scrollY > 40);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -63,6 +74,18 @@ export default function Header() {
     }
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
+
+  // Close search on Escape
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+        setSearchQuery('');
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, []);
 
   const toggleMobileCategory = (id: string) => {
     setExpandedMobile((prev) => (prev === id ? null : id));
@@ -159,7 +182,7 @@ export default function Header() {
 
           {/* Right icons */}
           <div className="flex items-center gap-1">
-            <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 hover:bg-sage-lightest rounded-full transition-colors duration-200">
+            <button onClick={() => { setSearchOpen(!searchOpen); setSearchQuery(''); }} className="p-2 hover:bg-sage-lightest rounded-full transition-colors duration-200">
               <FiSearch size={18} />
             </button>
 
@@ -183,6 +206,15 @@ export default function Header() {
               )}
             </div>
 
+            <Link href="/wishlist" className="hidden sm:block relative p-2 hover:bg-sage-lightest rounded-full transition-colors duration-200">
+              <FiHeart size={18} />
+              {wishlistIds.length > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-sale text-white text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center leading-none">
+                  {wishlistIds.length}
+                </span>
+              )}
+            </Link>
+
             <Link href="/account" className="hidden sm:block p-2 hover:bg-sage-lightest rounded-full transition-colors duration-200">
               <FiUser size={18} />
             </Link>
@@ -199,19 +231,59 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Search overlay */}
+      {/* Search overlay with results */}
       {searchOpen && (
-        <div className="bg-white border-b border-border px-4 py-3 mega-menu-enter">
+        <div className="bg-white border-b border-border px-4 py-3 mega-menu-enter" ref={searchRef}>
           <div className="max-w-xl mx-auto relative">
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('search.placeholder', locale)}
               className="w-full border border-border rounded-full py-2.5 pl-4 pr-12 text-sm focus:outline-none focus:border-sage-dark focus:ring-1 focus:ring-sage-dark transition-all duration-300"
               autoFocus
             />
-            <button className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-sage text-white p-2 rounded-full hover:bg-sage-dark transition-colors duration-200">
-              <FiSearch size={14} />
+            <button
+              onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-sage text-white p-2 rounded-full hover:bg-sage-dark transition-colors duration-200"
+            >
+              {searchQuery ? <FiX size={14} /> : <FiSearch size={14} />}
             </button>
+
+            {/* Search dropdown results */}
+            {searchQuery.trim() && (
+              <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-border rounded-xl shadow-2xl overflow-hidden z-50">
+                {searchResults.length > 0 ? (
+                  <div>
+                    {searchResults.map((p) => (
+                      <Link
+                        key={p.id}
+                        href={`/products/${p.slug}`}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-sage-lightest transition-colors border-b border-border-light last:border-0"
+                        onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                      >
+                        {p.images.length > 0 ? (
+                          <Image src={p.images[0]} alt={p.name} width={40} height={40} className="w-10 h-10 rounded-lg object-cover" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-sage-lightest flex items-center justify-center text-xs font-bold text-sage-darker">
+                            {p.brand.charAt(0)}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-charcoal truncate">{p.name}</p>
+                          <p className="text-xs text-text-muted">{p.brand}</p>
+                        </div>
+                        <span className="text-sm font-semibold text-charcoal shrink-0">{formatPrice(p.price)}</span>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="px-4 py-6 text-center text-sm text-text-muted">
+                    {t('search.noResults', locale)}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -314,8 +386,19 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Mobile account link */}
+            {/* Mobile account & wishlist */}
             <div className="border-t border-border mt-2 pt-2">
+              <Link
+                href="/wishlist"
+                className="flex items-center gap-3 px-6 py-4 text-base text-charcoal hover:bg-sage-lightest transition-colors duration-200"
+                onClick={() => setMobileOpen(false)}
+              >
+                <FiHeart size={20} />
+                {t('wishlist.title', locale)}
+                {wishlistIds.length > 0 && (
+                  <span className="text-xs bg-sale text-white px-1.5 py-0.5 rounded-full">{wishlistIds.length}</span>
+                )}
+              </Link>
               <Link
                 href="/account"
                 className="flex items-center gap-3 px-6 py-4 text-base text-charcoal hover:bg-sage-lightest transition-colors duration-200"

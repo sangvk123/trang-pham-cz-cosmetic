@@ -16,8 +16,22 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Trang Pham Cosmetics | Mỹ phẩm chính hãng Hàn Quốc tại Séc",
+  title: {
+    default: "Trang Pham Cosmetics | Mỹ phẩm chính hãng Hàn Quốc tại Séc",
+    template: "%s | Trang Pham Cosmetics",
+  },
   description: "Cửa hàng mỹ phẩm Hàn Quốc chính hãng tại Séc. K-beauty skincare, makeup. Originální korejská kosmetika v Česku.",
+  keywords: ["mỹ phẩm Hàn Quốc", "K-beauty", "korejská kosmetika", "Korean cosmetics", "skincare", "makeup", "Praha", "Czech Republic"],
+  authors: [{ name: "Trang Pham Cosmetics" }],
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    alternateLocale: ["cs_CZ", "en_US"],
+    siteName: "Trang Pham Cosmetics",
+    title: "Trang Pham Cosmetics | Mỹ phẩm chính hãng Hàn Quốc tại Séc",
+    description: "Cửa hàng mỹ phẩm Hàn Quốc chính hãng tại Séc. K-beauty skincare, makeup.",
+  },
+  metadataBase: new URL("https://trangphamcosmetics.cz"),
 };
 
 export default function RootLayout({

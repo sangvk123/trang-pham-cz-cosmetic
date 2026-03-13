@@ -1,27 +1,39 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FiShoppingCart, FiMinus, FiPlus, FiHeart } from 'react-icons/fi';
 import { useLocale } from '@/lib/LocaleContext';
 import { useCart } from '@/lib/CartContext';
+import { useToast } from '@/lib/ToastContext';
+import { useWishlist } from '@/lib/WishlistContext';
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { t } from '@/lib/i18n';
 import { products } from '@/data/products';
 import { categories } from '@/data/categories';
 import { formatPrice } from '@/lib/utils';
 import ProductCard from '@/components/ProductCard';
+import ShareButtons from '@/components/ShareButtons';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
   const { locale } = useLocale();
   const { addToCart } = useCart();
+  const { showToast } = useToast();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { recentIds, addViewed } = useRecentlyViewed();
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<number>(0);
 
   const product = products.find((p) => p.slug === slug);
+
+  // Track recently viewed
+  useEffect(() => {
+    if (product) addViewed(product.id);
+  }, [product, addViewed]);
 
   if (!product) {
     return (
@@ -36,22 +48,38 @@ export default function ProductDetailPage() {
 
   const category = categories.find((c) => c.id === product.category);
   const hasImage = product.images.length > 0;
+  const wishlisted = isInWishlist(product.id);
 
   const relatedProducts = products
     .filter((p) => p.category === product.category && p.id !== product.id)
+    .slice(0, 4);
+
+  // Recently viewed (exclude current)
+  const recentlyViewedProducts = recentIds
+    .filter((id) => id !== product.id)
+    .map((id) => products.find((p) => p.id === id))
+    .filter(Boolean)
     .slice(0, 4);
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
       addToCart(product);
     }
+    showToast(t('toast.addedToCart', locale));
+  };
+
+  const handleToggleWishlist = () => {
+    toggleWishlist(product.id);
+    showToast(
+      wishlisted ? t('toast.removedFromWishlist', locale) : t('toast.addedToWishlist', locale)
+    );
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Breadcrumb */}
       <nav className="text-sm text-text-muted mb-6">
-        <Link href="/" className="hover:text-sage-darker">Home</Link>
+        <Link href="/" className="hover:text-sage-darker">{t('nav.home', locale)}</Link>
         <span className="mx-2">/</span>
         {category && (
           <>
@@ -172,7 +200,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 mb-5">
             <button
               onClick={handleAddToCart}
               className="flex-1 bg-charcoal text-white py-3 rounded-full font-medium text-sm hover:bg-charcoal-light transition-colors flex items-center justify-center gap-2"
@@ -182,22 +210,42 @@ export default function ProductDetailPage() {
                 ? t('product.addToCart', locale)
                 : (locale === 'vi' ? 'Liên hệ đặt hàng' : locale === 'cs' ? 'Kontaktujte nás' : 'Contact to Order')}
             </button>
-            <button className="w-12 h-12 border border-border rounded-full flex items-center justify-center hover:bg-sage-lightest transition-colors">
-              <FiHeart size={18} />
+            <button
+              onClick={handleToggleWishlist}
+              className={`w-12 h-12 border rounded-full flex items-center justify-center transition-colors ${
+                wishlisted ? 'bg-sale/10 border-sale text-sale' : 'border-border hover:bg-sage-lightest'
+              }`}
+            >
+              <FiHeart size={18} fill={wishlisted ? 'currentColor' : 'none'} />
             </button>
           </div>
+
+          {/* Share */}
+          <ShareButtons url={`/products/${product.slug}`} title={product.name} />
         </div>
       </div>
 
       {/* Related products */}
       {relatedProducts.length > 0 && (
-        <section>
+        <section className="mb-12">
           <h2 className="text-xl font-bold text-charcoal mb-6">
             {locale === 'vi' ? 'Sản phẩm liên quan' : locale === 'cs' ? 'Související produkty' : 'Related Products'}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
             {relatedProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Recently viewed */}
+      {recentlyViewedProducts.length > 0 && (
+        <section>
+          <h2 className="text-xl font-bold text-charcoal mb-6">{t('recentlyViewed', locale)}</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
+            {recentlyViewedProducts.map((p) => (
+              <ProductCard key={p!.id} product={p!} />
             ))}
           </div>
         </section>

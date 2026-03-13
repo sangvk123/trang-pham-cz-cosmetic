@@ -6,14 +6,22 @@ import { FiShoppingBag } from 'react-icons/fi';
 import { Product } from '@/types';
 import { useLocale } from '@/lib/LocaleContext';
 import { useCart } from '@/lib/CartContext';
+import { useToast } from '@/lib/ToastContext';
 import { t } from '@/lib/i18n';
 import { formatPrice } from '@/lib/utils';
 
 export default function ProductCard({ product }: { product: Product }) {
   const { locale } = useLocale();
   const { addToCart } = useCart();
+  const { showToast } = useToast();
 
   const hasImage = product.images.length > 0;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart(product);
+    showToast(t('toast.addedToCart', locale));
+  };
 
   return (
     <div className="group">
@@ -48,7 +56,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {/* Quick add overlay */}
         <div className="absolute inset-x-0 bottom-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
-            onClick={(e) => { e.preventDefault(); addToCart(product); }}
+            onClick={handleAddToCart}
             className="w-full bg-charcoal text-white text-xs font-medium py-2.5 rounded-full hover:bg-charcoal-light transition-colors flex items-center justify-center gap-1.5"
           >
             <FiShoppingBag size={13} />
