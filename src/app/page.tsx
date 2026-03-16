@@ -76,7 +76,7 @@ export default function HomePage() {
               height={64}
               className="h-14 w-auto mb-6 animate-fadeIn"
             />
-            <h1 className="font-[family-name:var(--font-playfair)] text-4xl md:text-6xl font-semibold text-charcoal tracking-tight mb-4 italic leading-tight">
+            <h1 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-charcoal tracking-tight mb-4 italic leading-tight">
               {t('home.hero.title', locale)}
             </h1>
             <p className="text-base md:text-lg text-text-secondary max-w-md mb-8 animate-fadeIn" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
@@ -107,15 +107,15 @@ export default function HomePage() {
 
       {/* Trust badges */}
       <section className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-3 gap-4">
+        <div className="max-w-7xl mx-auto px-4 py-5 sm:py-6 flex flex-col sm:flex-row sm:justify-around gap-3 sm:gap-4">
           {[
             { icon: FiTruck, vi: 'Miễn phí ship từ 1.500 CZK', cs: 'Doprava zdarma od 1.500 Kč', en: 'Free shipping over 1,500 CZK' },
             { icon: FiShield, vi: '100% chính hãng', cs: '100% originální', en: '100% Authentic' },
             { icon: FiRefreshCw, vi: '14 ngày đổi trả', cs: '14 dní na vrácení', en: '14-day returns' },
           ].map((item, i) => (
-            <div key={i} className="flex flex-col md:flex-row items-center gap-2 text-center md:text-left">
+            <div key={i} className="flex items-center gap-2.5 sm:flex-col sm:items-center sm:gap-2 sm:text-center">
               <item.icon size={20} className="text-sage-dark shrink-0" />
-              <span className="text-xs md:text-sm text-text-secondary">{item[locale]}</span>
+              <span className="text-sm sm:text-xs md:text-sm text-text-secondary">{item[locale]}</span>
             </div>
           ))}
         </div>

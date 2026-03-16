@@ -47,7 +47,7 @@ export default function FAQPage() {
             <div
               className="overflow-hidden transition-all duration-300"
               style={{
-                maxHeight: openIndex === i ? '200px' : '0px',
+                maxHeight: openIndex === i ? '500px' : '0px',
                 opacity: openIndex === i ? 1 : 0,
               }}
             >

@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
+import { FiChevronDown, FiChevronRight, FiSliders, FiX } from 'react-icons/fi';
 import { useLocale } from '@/lib/LocaleContext';
 import { t } from '@/lib/i18n';
 import { categories } from '@/data/categories';
@@ -18,6 +18,7 @@ export default function CategoryPage() {
   useScrollReveal();
   const [sortBy, setSortBy] = useState('popular');
   const [sidebarOpen, setSidebarOpen] = useState<string | null>(null);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Product counts per category/subcategory
   const productCounts = useMemo(() => {
@@ -81,6 +82,79 @@ export default function CategoryPage() {
           </>
         )}
       </nav>
+
+      {/* Mobile filter button */}
+      <div className="lg:hidden mb-4">
+        <button
+          onClick={() => setMobileFilterOpen(true)}
+          className="inline-flex items-center gap-2 border border-border rounded-full px-4 py-2.5 text-sm font-medium text-charcoal hover:bg-sage-lightest transition-colors"
+        >
+          <FiSliders size={16} />
+          {locale === 'vi' ? 'Danh mục' : locale === 'cs' ? 'Kategorie' : 'Categories'}
+        </button>
+      </div>
+
+      {/* Mobile filter drawer */}
+      {mobileFilterOpen && (
+        <div className="lg:hidden fixed inset-0 z-[60]">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={() => setMobileFilterOpen(false)} />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[70vh] overflow-y-auto animate-slideUp">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border sticky top-0 bg-white z-10">
+              <h3 className="font-semibold text-charcoal">
+                {locale === 'vi' ? 'Danh mục' : locale === 'cs' ? 'Kategorie' : 'Categories'}
+              </h3>
+              <button onClick={() => setMobileFilterOpen(false)} className="p-2 hover:bg-sage-lightest rounded-full">
+                <FiX size={20} />
+              </button>
+            </div>
+            <nav className="p-4 space-y-1">
+              {categories.map((cat) => (
+                <div key={cat.id}>
+                  <Link
+                    href={`/category/${cat.slug}`}
+                    onClick={() => setMobileFilterOpen(false)}
+                    className={`block py-3 px-3 rounded-lg text-sm font-medium transition-colors ${
+                      category?.id === cat.id && !sub ? 'bg-sage-lightest text-sage-darker' : 'text-charcoal hover:bg-sage-lightest/50'
+                    }`}
+                  >
+                    {cat.name[locale]}
+                    <span className="text-xs text-text-muted ml-1">({productCounts[cat.id] || 0})</span>
+                  </Link>
+                  {cat.subcategories && (
+                    <div className="pl-4 space-y-0.5">
+                      {cat.subcategories.map((s) => (
+                        <Link
+                          key={s.id}
+                          href={`/category/${s.slug}`}
+                          onClick={() => setMobileFilterOpen(false)}
+                          className={`flex items-center gap-2 py-2.5 px-3 rounded-lg text-sm transition-colors ${
+                            sub?.id === s.id ? 'bg-sage-lightest text-sage-darker font-medium' : 'text-text-secondary hover:bg-sage-lightest/50'
+                          }`}
+                        >
+                          <FiChevronRight size={12} className="text-text-muted" />
+                          {s.name[locale]}
+                          <span className="text-xs text-text-muted ml-auto">{productCounts[s.id] || 0}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div className="border-t border-border-light pt-2 mt-2">
+                <Link
+                  href="/category/instock"
+                  onClick={() => setMobileFilterOpen(false)}
+                  className={`block py-3 px-3 rounded-lg text-sm font-medium transition-colors ${
+                    slug === 'instock' ? 'bg-sage-lightest text-sage-darker' : 'text-charcoal hover:bg-sage-lightest/50'
+                  }`}
+                >
+                  {t('nav.bestsellers', locale)}
+                </Link>
+              </div>
+            </nav>
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-8">
         {/* Left sidebar - desktop */}

@@ -97,26 +97,6 @@ export default function Footer() {
                   {t('footer.returns', locale)}
                 </Link>
               </li>
-              <li>
-                <Link href="/terms" className="hover:text-sage-darker transition-colors duration-200">
-                  {locale === 'cs' ? 'Obchodní podmínky' : locale === 'vi' ? 'Điều khoản' : 'Terms'}
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="hover:text-sage-darker transition-colors duration-200">
-                  {locale === 'cs' ? 'Ochrana údajů' : locale === 'vi' ? 'Bảo mật' : 'Privacy'}
-                </Link>
-              </li>
-              <li>
-                <Link href="/complaints" className="hover:text-sage-darker transition-colors duration-200">
-                  {locale === 'cs' ? 'Reklamační řád' : locale === 'vi' ? 'Khiếu nại' : 'Complaints'}
-                </Link>
-              </li>
-              <li>
-                <Link href="/withdrawal" className="hover:text-sage-darker transition-colors duration-200">
-                  {locale === 'cs' ? 'Odstoupení od smlouvy' : locale === 'vi' ? 'Hủy đơn' : 'Withdrawal'}
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -151,8 +131,24 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-border">
-        <div className="max-w-7xl mx-auto px-4 py-4 text-center text-xs text-text-muted">
-          &copy; {new Date().getFullYear()} {storeInfo.name}. {t('footer.rights', locale)}
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mb-2 text-xs text-text-muted">
+            <Link href="/terms" className="hover:text-sage-darker transition-colors">
+              {locale === 'cs' ? 'Obchodní podmínky' : locale === 'vi' ? 'Điều khoản' : 'Terms'}
+            </Link>
+            <Link href="/privacy" className="hover:text-sage-darker transition-colors">
+              {locale === 'cs' ? 'Ochrana údajů' : locale === 'vi' ? 'Bảo mật' : 'Privacy'}
+            </Link>
+            <Link href="/complaints" className="hover:text-sage-darker transition-colors">
+              {locale === 'cs' ? 'Reklamační řád' : locale === 'vi' ? 'Khiếu nại' : 'Complaints'}
+            </Link>
+            <Link href="/withdrawal" className="hover:text-sage-darker transition-colors">
+              {locale === 'cs' ? 'Odstoupení od smlouvy' : locale === 'vi' ? 'Hủy đơn' : 'Withdrawal'}
+            </Link>
+          </div>
+          <p className="text-center text-xs text-text-muted">
+            &copy; {new Date().getFullYear()} {storeInfo.name}. {t('footer.rights', locale)}
+          </p>
         </div>
       </div>
     </footer>

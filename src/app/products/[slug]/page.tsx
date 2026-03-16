@@ -139,12 +139,12 @@ export default function ProductDetailPage() {
                 {locale === 'vi' ? 'Màu sắc' : locale === 'cs' ? 'Barva' : 'Color'}:{' '}
                 <span className="font-bold">{product.colors[selectedColor].name}</span>
               </p>
-              <div className="flex flex-wrap gap-2.5">
+              <div className="flex flex-wrap gap-3">
                 {product.colors.map((color, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedColor(idx)}
-                    className={`w-9 h-9 rounded-full transition-all duration-200 ${
+                    className={`w-11 h-11 rounded-full transition-all duration-200 ${
                       selectedColor === idx
                         ? 'ring-2 ring-offset-2 ring-charcoal scale-110'
                         : 'hover:scale-105 hover:ring-1 hover:ring-offset-1 hover:ring-border'
@@ -182,19 +182,19 @@ export default function ProductDetailPage() {
             </span>
             <div className="flex items-center border border-border rounded-full overflow-hidden">
               <button
-                className="w-9 h-9 flex items-center justify-center hover:bg-sage-lightest transition-colors"
+                className="w-11 h-11 flex items-center justify-center hover:bg-sage-lightest active:bg-sage-light transition-colors"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
               >
-                <FiMinus size={14} />
+                <FiMinus size={16} />
               </button>
-              <span className="w-10 text-center text-sm font-medium border-x border-border">
+              <span className="w-12 text-center text-sm font-medium border-x border-border">
                 {quantity}
               </span>
               <button
-                className="w-9 h-9 flex items-center justify-center hover:bg-sage-lightest transition-colors"
+                className="w-11 h-11 flex items-center justify-center hover:bg-sage-lightest active:bg-sage-light transition-colors"
                 onClick={() => setQuantity(quantity + 1)}
               >
-                <FiPlus size={14} />
+                <FiPlus size={16} />
               </button>
             </div>
           </div>
@@ -241,7 +241,7 @@ export default function ProductDetailPage() {
 
       {/* Recently viewed */}
       {recentlyViewedProducts.length > 0 && (
-        <section>
+        <section className="pb-20 md:pb-0">
           <h2 className="text-xl font-bold text-charcoal mb-6">{t('recentlyViewed', locale)}</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
             {recentlyViewedProducts.map((p) => (
@@ -250,6 +250,23 @@ export default function ProductDetailPage() {
           </div>
         </section>
       )}
+
+      {/* Sticky mobile Add-to-Cart bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 z-40 flex items-center gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-text-muted truncate">{product.name}</p>
+          <p className="text-sm font-bold text-charcoal">{formatPrice(product.price)}</p>
+        </div>
+        <button
+          onClick={handleAddToCart}
+          className="bg-charcoal text-white py-3 px-6 rounded-full font-medium text-sm active:bg-charcoal-light transition-colors flex items-center gap-2 shrink-0"
+        >
+          <FiShoppingCart size={16} />
+          {product.inStock
+            ? t('product.addToCart', locale)
+            : (locale === 'vi' ? 'Liên hệ' : locale === 'cs' ? 'Kontakt' : 'Contact')}
+        </button>
+      </div>
     </div>
   );
 }

@@ -53,8 +53,8 @@ export default function ProductCard({ product }: { product: Product }) {
             </span>
           </div>
         )}
-        {/* Quick add overlay */}
-        <div className="absolute inset-x-0 bottom-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {/* Quick add overlay - desktop only */}
+        <div className="absolute inset-x-0 bottom-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hidden sm:block">
           <button
             onClick={handleAddToCart}
             className="w-full bg-charcoal text-white text-xs font-medium py-2.5 rounded-full hover:bg-charcoal-light transition-colors flex items-center justify-center gap-1.5"
@@ -73,8 +73,16 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.name}
           </h3>
         </Link>
-        <div className="mt-1.5">
+        <div className="mt-1.5 flex items-center justify-between gap-2">
           <span className="text-sm font-semibold">{formatPrice(product.price)}</span>
+          {/* Mobile add-to-cart button */}
+          <button
+            onClick={handleAddToCart}
+            className="sm:hidden w-9 h-9 bg-charcoal text-white rounded-full flex items-center justify-center active:bg-charcoal-light transition-colors shrink-0"
+            aria-label={t('product.addToCart', locale)}
+          >
+            <FiShoppingBag size={14} />
+          </button>
         </div>
       </div>
     </div>

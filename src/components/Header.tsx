@@ -206,7 +206,7 @@ export default function Header() {
               )}
             </div>
 
-            <Link href="/wishlist" className="hidden sm:block relative p-2 hover:bg-sage-lightest rounded-full transition-colors duration-200">
+            <Link href="/wishlist" className="relative p-2 hover:bg-sage-lightest rounded-full transition-colors duration-200">
               <FiHeart size={18} />
               {wishlistIds.length > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-sale text-white text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center leading-none">
