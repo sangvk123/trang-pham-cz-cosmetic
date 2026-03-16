@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiArrowLeft } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiArrowLeft, FiTruck } from 'react-icons/fi';
 import { useLocale } from '@/lib/LocaleContext';
 import { useCart } from '@/lib/CartContext';
 import { formatPrice } from '@/lib/utils';
@@ -102,16 +102,16 @@ export default function CartPage() {
                   <div className="flex items-center border border-border rounded-full overflow-hidden">
                     <button
                       onClick={() => updateQuantity(product.id, quantity - 1)}
-                      className="w-8 h-8 flex items-center justify-center hover:bg-sage-lightest transition-colors"
+                      className="w-11 h-11 flex items-center justify-center hover:bg-sage-lightest active:bg-sage-light transition-colors"
                     >
-                      <FiMinus size={12} />
+                      <FiMinus size={14} />
                     </button>
-                    <span className="w-8 text-center text-sm font-medium border-x border-border">{quantity}</span>
+                    <span className="w-10 text-center text-sm font-medium border-x border-border">{quantity}</span>
                     <button
                       onClick={() => updateQuantity(product.id, quantity + 1)}
-                      className="w-8 h-8 flex items-center justify-center hover:bg-sage-lightest transition-colors"
+                      className="w-11 h-11 flex items-center justify-center hover:bg-sage-lightest active:bg-sage-light transition-colors"
                     >
-                      <FiPlus size={12} />
+                      <FiPlus size={14} />
                     </button>
                   </div>
 
@@ -139,6 +139,32 @@ export default function CartPage() {
         <div className="lg:col-span-1">
           <div className="bg-sage-lightest rounded-xl p-6 sticky top-32">
             <h2 className="text-lg font-bold text-charcoal mb-4">{texts.total[locale]}</h2>
+
+            {/* Free shipping progress bar */}
+            {!shippingFree ? (
+              <div className="mb-4 p-3 bg-white rounded-lg">
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="text-text-secondary">
+                    {locale === 'vi'
+                      ? `Còn ${formatPrice(FREE_SHIPPING_THRESHOLD - totalPrice)} để được miễn phí ship`
+                      : locale === 'cs'
+                      ? `Ještě ${formatPrice(FREE_SHIPPING_THRESHOLD - totalPrice)} do dopravy zdarma`
+                      : `${formatPrice(FREE_SHIPPING_THRESHOLD - totalPrice)} away from free shipping`}
+                  </span>
+                </div>
+                <div className="w-full h-2 bg-border rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-sage-dark rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min((totalPrice / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="mb-4 p-3 bg-badge-new rounded-lg flex items-center gap-2 text-sm text-sage-darker font-medium">
+                <FiTruck size={16} />
+                {locale === 'vi' ? 'Bạn được miễn phí vận chuyển!' : locale === 'cs' ? 'Máte dopravu zdarma!' : 'You qualify for free shipping!'}
+              </div>
+            )}
 
             <div className="space-y-3 text-sm border-b border-border pb-4 mb-4">
               <div className="flex justify-between">

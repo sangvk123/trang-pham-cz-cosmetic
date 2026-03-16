@@ -11,6 +11,8 @@ import Footer from '@/components/Footer';
 import FloatingContact from '@/components/FloatingContact';
 import BackToTop from '@/components/BackToTop';
 import CookieConsent from '@/components/CookieConsent';
+import WelcomePopup from '@/components/WelcomePopup';
+import ChatBot from '@/components/ChatBot';
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   return (
@@ -26,6 +28,8 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
           <FloatingContact />
           <BackToTop />
           <CookieConsent />
+          <WelcomePopup />
+          <ChatBot />
         </div>
         </WishlistProvider>
         </ToastProvider>

@@ -8,6 +8,7 @@ import { useLocale } from '@/lib/LocaleContext';
 import { t } from '@/lib/i18n';
 import { products, brands } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
+import FlashSaleBanner from '@/components/FlashSaleBanner';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 
 const heroImages = [
@@ -120,6 +121,9 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Flash Sale Banner */}
+      <FlashSaleBanner />
 
       {/* In Stock - Featured */}
       {inStockProducts.length > 0 && (
