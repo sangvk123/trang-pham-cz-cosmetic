@@ -1,140 +1,112 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import { FiMessageCircle, FiX, FiSend, FiShoppingBag } from 'react-icons/fi';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { FiSend, FiX } from 'react-icons/fi';
+import { BsChatDots } from 'react-icons/bs';
 import { useLocale } from '@/lib/LocaleContext';
-import { useCart } from '@/lib/CartContext';
-import { useToast } from '@/lib/ToastContext';
-import { products } from '@/data/products';
-import { categories } from '@/data/categories';
-import { formatPrice } from '@/lib/utils';
-import { Product } from '@/types';
 
-type Message = {
+const MAX_USER_MESSAGES = 15;
+const STORAGE_KEY = 'trangpham-chat-count';
+
+type DisplayMessage = {
   id: string;
   role: 'bot' | 'user';
   text: string;
-  products?: Product[];
   quickReplies?: string[];
+};
+
+type ApiMessage = {
+  role: 'user' | 'assistant';
+  content: string;
 };
 
 const text = {
   vi: {
     title: 'Trợ lý mua hàng',
-    subtitle: 'Online',
+    subtitle: 'AI · Online',
     placeholder: 'Nhập tin nhắn...',
-    welcome: 'Xin chào! 👋 Tôi là trợ lý mua hàng của Trang Pham Cosmetics. Tôi có thể giúp bạn:',
+    welcome: 'Xin chào! 👋 Tôi là trợ lý mua hàng AI của Trang Pham Cosmetics. Hãy hỏi tôi về sản phẩm, skincare, hoặc đặt hàng!',
     quickReplies: ['Tìm sản phẩm', 'Tư vấn skincare', 'Xem khuyến mãi', 'Hỗ trợ đặt hàng'],
-    noResults: 'Không tìm thấy sản phẩm phù hợp. Bạn có thể thử từ khóa khác hoặc liên hệ qua Facebook để được tư vấn trực tiếp.',
-    foundProducts: 'Tôi tìm thấy {count} sản phẩm phù hợp:',
-    addedToCart: 'Đã thêm vào giỏ!',
-    skincare: 'Bạn quan tâm đến loại sản phẩm skincare nào?',
-    skincareReplies: ['Tẩy trang', 'Sữa rửa mặt', 'Toner', 'Serum', 'Kem dưỡng', 'Chống nắng', 'Mặt nạ'],
-    promo: '🔥 Hiện tại chúng tôi có:\n• Miễn phí ship từ 1.500 CZK\n• Giảm 10% đơn đầu với mã WELCOME10\n• Flash Sale skincare Hàn Quốc giảm đến 30%!\n\nBạn muốn xem sản phẩm nào?',
-    orderHelp: 'Để đặt hàng, bạn có thể:\n1. Thêm sản phẩm vào giỏ hàng trên web\n2. Liên hệ qua Facebook: fb.com/trangptt.2011\n3. Gọi/Zalo: (+420) 607 715 020\n\nBạn cần hỗ trợ gì thêm?',
-    orderReplies: ['Xem giỏ hàng', 'Tìm sản phẩm', 'Liên hệ Facebook'],
-    viewAll: 'Xem tất cả',
-    addToCart: 'Thêm vào giỏ',
+    limitReached: 'Bạn đã sử dụng hết lượt chat miễn phí cho phiên này. Để được tư vấn thêm, hãy nhắn tin cho chúng tôi qua Facebook nhé! 💬',
+    limitCta: 'Nhắn tin Facebook',
+    typing: 'Đang trả lời...',
+    error: 'Xin lỗi, có lỗi xảy ra. Vui lòng thử lại hoặc liên hệ qua Facebook.',
+    remaining: 'tin nhắn còn lại',
   },
   cs: {
     title: 'Nákupní asistent',
-    subtitle: 'Online',
+    subtitle: 'AI · Online',
     placeholder: 'Napište zprávu...',
-    welcome: 'Dobrý den! 👋 Jsem nákupní asistent Trang Pham Cosmetics. Mohu vám pomoci s:',
-    quickReplies: ['Hledat produkt', 'Poradit se skincare', 'Zobrazit akce', 'Pomoc s objednávkou'],
-    noResults: 'Nenašel jsem žádný vhodný produkt. Zkuste jiné klíčové slovo nebo nás kontaktujte přes Facebook.',
-    foundProducts: 'Našel jsem {count} produktů:',
-    addedToCart: 'Přidáno do košíku!',
-    skincare: 'O jaký typ skincare produktu máte zájem?',
-    skincareReplies: ['Odličování', 'Čistící pěna', 'Toner', 'Sérum', 'Krém', 'Opalovací krém', 'Maska'],
-    promo: '🔥 Aktuální nabídky:\n• Doprava zdarma od 1.500 Kč\n• 10% sleva na první objednávku s kódem WELCOME10\n• Flash Sale korejské kosmetiky až 30% sleva!\n\nCo byste chtěli vidět?',
-    orderHelp: 'Pro objednávku můžete:\n1. Přidat produkty do košíku na webu\n2. Kontaktovat přes Facebook: fb.com/trangptt.2011\n3. Volat/Zalo: (+420) 607 715 020\n\nPotřebujete další pomoc?',
-    orderReplies: ['Zobrazit košík', 'Hledat produkt', 'Kontaktovat Facebook'],
-    viewAll: 'Zobrazit vše',
-    addToCart: 'Do košíku',
+    welcome: 'Dobrý den! 👋 Jsem AI nákupní asistent Trang Pham Cosmetics. Zeptejte se mě na produkty, skincare nebo objednávky!',
+    quickReplies: ['Hledat produkt', 'Poradit skincare', 'Zobrazit akce', 'Pomoc s objednávkou'],
+    limitReached: 'Vyčerpali jste bezplatné zprávy pro tuto relaci. Pro další poradenství nám napište na Facebook! 💬',
+    limitCta: 'Napsat na Facebook',
+    typing: 'Odpovídám...',
+    error: 'Omlouváme se, došlo k chybě. Zkuste to znovu nebo nás kontaktujte přes Facebook.',
+    remaining: 'zpráv zbývá',
   },
   en: {
     title: 'Shopping Assistant',
-    subtitle: 'Online',
+    subtitle: 'AI · Online',
     placeholder: 'Type a message...',
-    welcome: 'Hello! 👋 I\'m the Trang Pham Cosmetics shopping assistant. I can help you with:',
+    welcome: 'Hello! 👋 I\'m the Trang Pham Cosmetics AI shopping assistant. Ask me about products, skincare, or ordering!',
     quickReplies: ['Find products', 'Skincare advice', 'View promotions', 'Order help'],
-    noResults: 'No matching products found. Try different keywords or contact us via Facebook for personal assistance.',
-    foundProducts: 'I found {count} matching products:',
-    addedToCart: 'Added to cart!',
-    skincare: 'What type of skincare product are you interested in?',
-    skincareReplies: ['Oil Cleanser', 'Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Sheet Mask'],
-    promo: '🔥 Current promotions:\n• Free shipping over 1,500 CZK\n• 10% OFF first order with code WELCOME10\n• Flash Sale on Korean skincare up to 30% off!\n\nWhat would you like to see?',
-    orderHelp: 'To place an order, you can:\n1. Add products to cart on the website\n2. Contact via Facebook: fb.com/trangptt.2011\n3. Call/Zalo: (+420) 607 715 020\n\nNeed anything else?',
-    orderReplies: ['View cart', 'Find products', 'Contact Facebook'],
-    viewAll: 'View all',
-    addToCart: 'Add to cart',
+    limitReached: 'You\'ve used all free messages for this session. For more help, message us on Facebook! 💬',
+    limitCta: 'Message on Facebook',
+    typing: 'Replying...',
+    error: 'Sorry, something went wrong. Please try again or contact us via Facebook.',
+    remaining: 'messages left',
   },
 };
 
-// Keyword mapping for product search
-const categoryKeywords: Record<string, string[]> = {
-  'oil-cleanser': ['tẩy trang', 'odličování', 'oil cleanser', 'cleansing oil', 'makeup remover'],
-  'water-cleanser': ['sữa rửa mặt', 'rửa mặt', 'čisticí', 'cleanser', 'foam', 'gel'],
-  'toner': ['toner', 'tonery'],
-  'toner-pad': ['toner pad', 'pad'],
-  'serum': ['serum', 'tinh chất', 'séra', 'esence', 'essence', 'ampoule'],
-  'moisturizer': ['kem dưỡng', 'dưỡng ẩm', 'krém', 'moistur', 'cream'],
-  'sunscreen': ['chống nắng', 'kem chống nắng', 'sunscreen', 'spf', 'opalovací', 'sun'],
-  'eye-care': ['kem mắt', 'eye', 'oční'],
-  'mask': ['mặt nạ', 'mask', 'sheet mask', 'maska'],
-  'treatment': ['đặc trị', 'treatment', 'acne', 'mụn', 'spot'],
-  'lip-care': ['dưỡng môi', 'lip', 'rty'],
-  'face': ['makeup', 'trang điểm', 'foundation', 'cushion', 'bb', 'cc', 'concealer', 'powder'],
-  'lips': ['son', 'lipstick', 'lip tint', 'rty', 'rtěnka'],
-  'eyes': ['mascara', 'eyeliner', 'eyeshadow', 'brow', 'lông mi', 'kẻ mắt'],
-  'body': ['body', 'dưỡng thể', 'tělový'],
-  'haircare': ['tóc', 'hair', 'shampoo', 'vlasy', 'šampon'],
-  'fragrance': ['nước hoa', 'parfém', 'fragrance', 'perfume'],
-};
-
-function searchProducts(query: string): Product[] {
-  const q = query.toLowerCase();
-
-  // Check category keywords first
-  for (const [subId, keywords] of Object.entries(categoryKeywords)) {
-    if (keywords.some(kw => q.includes(kw))) {
-      return products.filter(p => p.subcategory === subId || p.category === subId).slice(0, 4);
-    }
-  }
-
-  // Fallback to name/brand search
-  return products
-    .filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.brand.toLowerCase().includes(q) ||
-      p.group.toLowerCase().includes(q)
-    )
-    .slice(0, 4);
+let msgId = 0;
+function createMsg(role: 'bot' | 'user', content: string, quickReplies?: string[]): DisplayMessage {
+  return { id: `msg-${++msgId}`, role, text: content, quickReplies };
 }
 
-let msgId = 0;
-function createMsg(role: 'bot' | 'user', text: string, products?: Product[], quickReplies?: string[]): Message {
-  return { id: `msg-${++msgId}`, role, text, products, quickReplies };
+function getUsedCount(): number {
+  try {
+    return parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+  } catch {
+    return 0;
+  }
+}
+
+function incrementCount(): number {
+  try {
+    const next = getUsedCount() + 1;
+    localStorage.setItem(STORAGE_KEY, String(next));
+    return next;
+  } catch {
+    return 0;
+  }
 }
 
 export default function ChatBot() {
   const { locale } = useLocale();
-  const { addToCart } = useCart();
-  const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<DisplayMessage[]>([]);
+  const [apiHistory, setApiHistory] = useState<ApiMessage[]>([]);
   const [initialized, setInitialized] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [usedCount, setUsedCount] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const tx = text[locale] || text.en;
+  const remaining = MAX_USER_MESSAGES - usedCount;
+  const limitReached = remaining <= 0;
+
+  // Load count from storage
+  useEffect(() => {
+    setUsedCount(getUsedCount());
+  }, []);
 
   // Initialize with welcome message
   useEffect(() => {
     if (open && !initialized) {
-      setMessages([createMsg('bot', tx.welcome, undefined, tx.quickReplies)]);
+      setMessages([createMsg('bot', tx.welcome, tx.quickReplies)]);
       setInitialized(true);
     }
   }, [open, initialized, tx]);
@@ -142,106 +114,105 @@ export default function ChatBot() {
   // Scroll to bottom on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
-  const handleBotResponse = (userText: string) => {
-    const q = userText.toLowerCase();
-
-    // Check for skincare advice
-    if (q.includes('tư vấn') || q.includes('skincare') || q.includes('poradit') || q.includes('advice')) {
-      setMessages(prev => [...prev, createMsg('bot', tx.skincare, undefined, tx.skincareReplies)]);
-      return;
+  // Focus input when opening
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 300);
     }
+  }, [open]);
 
-    // Check for promotions
-    if (q.includes('khuyến mãi') || q.includes('sale') || q.includes('akce') || q.includes('promo') || q.includes('giảm')) {
-      setMessages(prev => [...prev, createMsg('bot', tx.promo)]);
-      return;
+  const callApi = useCallback(async (userText: string, history: ApiMessage[]) => {
+    const newHistory: ApiMessage[] = [...history, { role: 'user', content: userText }];
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: newHistory }),
+      });
+
+      if (!res.ok) throw new Error('API error');
+
+      const data = await res.json();
+      const reply = data.reply || tx.error;
+
+      setApiHistory([...newHistory, { role: 'assistant', content: reply }]);
+      setMessages(prev => [...prev, createMsg('bot', reply)]);
+    } catch {
+      setMessages(prev => [...prev, createMsg('bot', tx.error)]);
+    } finally {
+      setLoading(false);
     }
+  }, [tx.error]);
 
-    // Check for order help
-    if (q.includes('đặt hàng') || q.includes('order') || q.includes('objednávk') || q.includes('hỗ trợ') || q.includes('pomoc')) {
-      setMessages(prev => [...prev, createMsg('bot', tx.orderHelp, undefined, tx.orderReplies)]);
-      return;
-    }
-
-    // Check for cart
-    if (q.includes('giỏ hàng') || q.includes('košík') || q.includes('cart')) {
-      setMessages(prev => [...prev, createMsg('bot',
-        locale === 'vi' ? 'Bạn có thể xem giỏ hàng tại đây 👇' :
-        locale === 'cs' ? 'Košík si můžete prohlédnout zde 👇' :
-        'You can view your cart here 👇'
-      )]);
-      return;
-    }
-
-    // Check for Facebook contact
-    if (q.includes('facebook') || q.includes('fb') || q.includes('liên hệ') || q.includes('kontakt') || q.includes('contact')) {
-      setMessages(prev => [...prev, createMsg('bot',
-        locale === 'vi' ? 'Liên hệ Facebook: fb.com/trangptt.2011\nĐiện thoại/Zalo: (+420) 607 715 020\nEmail: info@trangphamcosmetics.cz' :
-        locale === 'cs' ? 'Facebook: fb.com/trangptt.2011\nTelefon/Zalo: (+420) 607 715 020\nEmail: info@trangphamcosmetics.cz' :
-        'Facebook: fb.com/trangptt.2011\nPhone/Zalo: (+420) 607 715 020\nEmail: info@trangphamcosmetics.cz'
-      )]);
-      return;
-    }
-
-    // Search products
-    const found = searchProducts(userText);
-    if (found.length > 0) {
-      setMessages(prev => [...prev, createMsg('bot', tx.foundProducts.replace('{count}', String(found.length)), found)]);
-    } else {
-      setMessages(prev => [...prev, createMsg('bot', tx.noResults)]);
-    }
-  };
-
-  const handleSend = (msg?: string) => {
+  const handleSend = useCallback((msg?: string) => {
     const userText = msg || input.trim();
-    if (!userText) return;
+    if (!userText || loading || limitReached) return;
 
+    // Add user message
     setMessages(prev => [...prev, createMsg('user', userText)]);
     setInput('');
+    setLoading(true);
 
-    // Simulate typing delay
-    setTimeout(() => handleBotResponse(userText), 400);
-  };
+    // Increment count
+    const newCount = incrementCount();
+    setUsedCount(newCount);
 
-  const handleAddToCart = (product: Product) => {
-    addToCart(product);
-    showToast(tx.addedToCart);
-  };
+    // Check if this was the last allowed message
+    if (newCount >= MAX_USER_MESSAGES) {
+      setTimeout(() => {
+        setMessages(prev => [...prev, createMsg('bot', tx.limitReached)]);
+        setLoading(false);
+      }, 400);
+      return;
+    }
+
+    // Call API
+    callApi(userText, apiHistory);
+  }, [input, loading, limitReached, apiHistory, callApi, tx.limitReached]);
 
   return (
     <>
-      {/* Chat toggle button */}
+      {/* Chat toggle button - positioned above FloatingContact */}
       <button
         onClick={() => setOpen(!open)}
-        className={`fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
-          open ? 'bg-charcoal text-white rotate-0' : 'bg-sage text-white hover:bg-sage-dark'
+        className={`fixed z-50 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
+          open
+            ? 'bg-charcoal text-white bottom-6 right-6'
+            : 'bg-sage text-white hover:bg-sage-dark bottom-[88px] right-[26px]'
         }`}
         aria-label="Chat"
       >
-        {open ? <FiX size={22} /> : <FiMessageCircle size={22} />}
+        {open ? <FiX size={20} /> : <BsChatDots size={18} />}
       </button>
 
       {/* Chat window */}
       {open && (
-        <div className="fixed bottom-36 right-4 z-50 w-[340px] sm:w-[380px] max-h-[500px] bg-white rounded-2xl shadow-2xl border border-border overflow-hidden flex flex-col animate-slideUp">
+        <div className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] max-h-[min(500px,70vh)] bg-white rounded-2xl shadow-2xl border border-border overflow-hidden flex flex-col animate-slideUp">
           {/* Header */}
-          <div className="bg-sage px-4 py-3 flex items-center gap-3">
+          <div className="bg-sage px-4 py-3 flex items-center gap-3 shrink-0">
             <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold">
               TP
             </div>
-            <div>
+            <div className="flex-1">
               <h3 className="text-sm font-semibold text-white">{tx.title}</h3>
               <p className="text-xs text-white/80 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-green-400 rounded-full" />
                 {tx.subtitle}
               </p>
             </div>
+            <button
+              onClick={() => setOpen(false)}
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+            >
+              <FiX size={16} />
+            </button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[280px] max-h-[340px]">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px]">
             {messages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] ${msg.role === 'user' ? 'order-1' : ''}`}>
@@ -253,38 +224,8 @@ export default function ChatBot() {
                     <p className="whitespace-pre-line">{msg.text}</p>
                   </div>
 
-                  {/* Product cards */}
-                  {msg.products && msg.products.length > 0 && (
-                    <div className="mt-2 space-y-2">
-                      {msg.products.map(p => (
-                        <div key={p.id} className="bg-white border border-border rounded-xl p-3 flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-lg bg-sage-lightest flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-sage-darker">{(p.brand || p.name).charAt(0)}</span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <Link
-                              href={`/products/${p.slug}`}
-                              className="text-xs font-medium text-charcoal hover:text-sage-darker line-clamp-1"
-                              onClick={() => setOpen(false)}
-                            >
-                              {p.name}
-                            </Link>
-                            <p className="text-xs font-bold text-charcoal mt-0.5">{formatPrice(p.price)}</p>
-                          </div>
-                          <button
-                            onClick={() => handleAddToCart(p)}
-                            className="w-8 h-8 bg-charcoal text-white rounded-full flex items-center justify-center shrink-0 active:bg-charcoal-light transition-colors"
-                            aria-label={tx.addToCart}
-                          >
-                            <FiShoppingBag size={12} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
                   {/* Quick replies */}
-                  {msg.quickReplies && (
+                  {msg.quickReplies && !limitReached && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {msg.quickReplies.map((reply) => (
                         <button
@@ -300,30 +241,69 @@ export default function ChatBot() {
                 </div>
               </div>
             ))}
+
+            {/* Typing indicator */}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="bg-sage-lightest text-charcoal rounded-2xl rounded-bl-md px-3.5 py-2.5 text-sm">
+                  <span className="flex items-center gap-1.5">
+                    <span className="flex gap-0.5">
+                      <span className="w-1.5 h-1.5 bg-sage-dark rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-1.5 h-1.5 bg-sage-dark rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-1.5 h-1.5 bg-sage-dark rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </span>
+                    <span className="text-xs text-text-muted ml-1">{tx.typing}</span>
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div ref={bottomRef} />
           </div>
 
-          {/* Input */}
-          <div className="border-t border-border p-3">
-            <form
-              onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-              className="flex items-center gap-2"
-            >
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={tx.placeholder}
-                className="flex-1 border border-border rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-sage-dark transition-colors"
-              />
-              <button
-                type="submit"
-                disabled={!input.trim()}
-                className="w-10 h-10 bg-sage text-white rounded-full flex items-center justify-center hover:bg-sage-dark disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
-              >
-                <FiSend size={16} />
-              </button>
-            </form>
+          {/* Input / Limit reached */}
+          <div className="border-t border-border p-3 shrink-0">
+            {limitReached ? (
+              <div className="text-center">
+                <a
+                  href="https://www.facebook.com/trangptt.2011"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-[#1877F2] text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-[#166FE5] transition-colors"
+                >
+                  {tx.limitCta}
+                </a>
+              </div>
+            ) : (
+              <>
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+                  className="flex items-center gap-2"
+                >
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder={tx.placeholder}
+                    disabled={loading}
+                    className="flex-1 border border-border rounded-full px-4 py-2.5 text-sm focus:outline-none focus:border-sage-dark transition-colors disabled:opacity-50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!input.trim() || loading}
+                    className="w-10 h-10 bg-sage text-white rounded-full flex items-center justify-center hover:bg-sage-dark disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+                  >
+                    <FiSend size={16} />
+                  </button>
+                </form>
+                {remaining <= 5 && remaining > 0 && (
+                  <p className="text-[10px] text-text-muted text-center mt-1.5">
+                    {remaining} {tx.remaining}
+                  </p>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}

@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { FiMessageCircle, FiX, FiPhone } from 'react-icons/fi';
+import { FiX, FiPhone } from 'react-icons/fi';
 import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { SiZalo } from 'react-icons/si';
+import { HiOutlineChatBubbleLeftRight } from 'react-icons/hi2';
 
 const contacts = [
   {
@@ -40,9 +41,9 @@ export default function FloatingContact() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2.5">
       {/* Contact buttons */}
-      <div className={`flex flex-col gap-3 transition-all duration-400 ${open ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+      <div className={`flex flex-col gap-2.5 transition-all duration-400 ${open ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
         style={{ transitionTimingFunction: 'cubic-bezier(.3, 1, .3, 1)' }}
       >
         {contacts.map((c, i) => (
@@ -58,7 +59,7 @@ export default function FloatingContact() {
               transitionTimingFunction: 'cubic-bezier(.3, 1, .3, 1)',
             }}
           >
-            <c.icon size={22} />
+            <c.icon size={20} />
             <span className="absolute right-full mr-3 px-3 py-1.5 bg-charcoal text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none shadow-lg">
               {c.name}
             </span>
@@ -66,16 +67,16 @@ export default function FloatingContact() {
         ))}
       </div>
 
-      {/* Toggle button */}
+      {/* Toggle button - same size as chatbot button (w-12 h-12) */}
       <button
         onClick={() => setOpen(!open)}
-        className={`relative w-14 h-14 rounded-full flex items-center justify-center text-white shadow-xl transition-all duration-400 hover:scale-105 ${
+        className={`relative w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-400 hover:scale-105 ${
           open ? 'bg-charcoal rotate-0' : 'bg-sage-darker float-bounce'
         }`}
         style={{ transitionTimingFunction: 'cubic-bezier(.3, 1, .3, 1)' }}
       >
         {!open && <span className="absolute inset-0 rounded-full bg-sage-darker pulse-ring" />}
-        {open ? <FiX size={22} /> : <FiMessageCircle size={24} />}
+        {open ? <FiX size={20} /> : <HiOutlineChatBubbleLeftRight size={20} />}
       </button>
     </div>
   );
