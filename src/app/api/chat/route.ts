@@ -118,7 +118,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ reply: text });
   } catch (error: unknown) {
     console.error('Chat API error:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    const errMsg = error instanceof Error ? error.message : 'Unknown error';
+    const errName = error instanceof Error ? error.constructor.name : 'Error';
+    return NextResponse.json(
+      { error: errMsg, type: errName },
+      { status: 500 }
+    );
   }
 }

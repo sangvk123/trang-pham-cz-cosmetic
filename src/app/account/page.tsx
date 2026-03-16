@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
+import { SessionProvider, useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FiUser, FiMail, FiLogOut, FiShoppingBag } from 'react-icons/fi';
@@ -20,7 +20,7 @@ const texts = {
   memberSince: { vi: 'Thành viên', cs: 'Člen od', en: 'Member' },
 };
 
-export default function AccountPage() {
+function AccountContent() {
   const { locale } = useLocale();
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -107,5 +107,13 @@ export default function AccountPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function AccountPage() {
+  return (
+    <SessionProvider>
+      <AccountContent />
+    </SessionProvider>
   );
 }
