@@ -3,9 +3,14 @@ import Anthropic from '@anthropic-ai/sdk';
 import productsJson from '@/data/products.json';
 import { categories } from '@/data/categories';
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+// Lazy init — avoid crash if key is missing at module load
+let _client: Anthropic | null = null;
+function getClient(): Anthropic {
+  if (!_client) {
+    _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+  }
+  return _client;
+}
 
 // Build a concise product catalog for the system prompt
 function buildCatalog(): string {
@@ -100,7 +105,7 @@ export async function POST(req: NextRequest) {
     // Limit conversation length server-side as well
     const trimmedMessages = messages.slice(-30);
 
-    const response = await client.messages.create({
+    const response = await getClient().messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 512,
       system: SYSTEM_PROMPT,
